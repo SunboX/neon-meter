@@ -1,0 +1,35 @@
+Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
+Upstream-Name: neon-meter
+Upstream-Contact: André Fiedler / SunboX <https://github.com/SunboX>
+Source: https://github.com/SunboX/neon-meter
+
+Files:
+ .github/workflows/deploy-web-tools.yml
+ .gitignore
+ .vscode/extensions.json
+ package.json
+ platformio.ini
+ scripts/*
+ src/*
+ tests/test_orientation/*
+ tests/test_splash_animation/*
+ tests/test_ui_connection/*
+ tests/test_ui_footer/*
+ tests/test_ui_footer_loader/*
+ tests/test_ui_layout/*
+ tests/test_usage_model/*
+ web/esp-web-tools/*
+Copyright: 2026 André Fiedler
+License: AGPL-3.0-or-later
+
+Files:
+ .reuse/dep5
+ AGENTS.md
+ COMMERCIAL-LICENSE.md
+ NOTICE.md
+ README.md
+ docs/*
+ docs/assets/*
+ specs/*
+Copyright: 2026 André Fiedler
+License: CC-BY-SA-4.0

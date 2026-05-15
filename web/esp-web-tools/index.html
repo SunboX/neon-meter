@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Neon Meter Web Installer</title>
+        <link
+            rel="icon"
+            href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='10' fill='%23050914'/%3E%3Ccircle cx='32' cy='34' r='17' fill='none' stroke='%2300f5ff' stroke-width='5'/%3E%3Cpath d='M32 34 L47 24' stroke='%23ff6a00' stroke-width='5' stroke-linecap='round'/%3E%3C/svg%3E"
+            type="image/svg+xml"
+        />
+        <link rel="stylesheet" href="style.css" />
+        <script
+            type="module"
+            src="https://unpkg.com/esp-web-tools@10/dist/web/install-button.js?module"
+        ></script>
+    </head>
+    <body class="neon-meter-app">
+        <main class="app-shell">
+            <header class="topbar">
+                <div class="brand">
+                    <div class="brand-mark" aria-hidden="true">
+                        <span class="meter-glyph"></span>
+                    </div>
+                    <div>
+                        <p class="eyebrow">ESP Web Tools</p>
+                        <h1>Neon Meter Web Installer</h1>
+                    </div>
+                </div>
+                <div class="toolbar">
+                    <span class="version-pill">M5Stack CoreS3</span>
+                </div>
+            </header>
+
+            <section class="status-strip">
+                <article class="status-item">
+                    <span>Target</span>
+                    <strong>M5Stack CoreS3</strong>
+                    <small>ESP32-S3 / 16 MB flash profile</small>
+                </article>
+                <article class="status-item">
+                    <span>Firmware</span>
+                    <strong>Neon Meter</strong>
+                    <small>BLE usage dashboard</small>
+                </article>
+                <article class="status-item">
+                    <span>Browser</span>
+                    <strong>Web Serial</strong>
+                    <small>Chrome or Edge over HTTPS</small>
+                </article>
+            </section>
+
+            <section class="workspace">
+                <section class="panel install-panel">
+                    <div class="section-heading">
+                        <h2>Install</h2>
+                    </div>
+                    <p class="lead">
+                        Connect your M5Stack CoreS3 over USB and install the
+                        Neon Meter firmware directly from this page.
+                    </p>
+                    <esp-web-install-button manifest="manifest.json">
+                        <button slot="activate" class="btn-primary">
+                            Install Neon Meter
+                        </button>
+                        <span slot="unsupported" class="tool-message">
+                            Open this page in Chrome or Edge to use Web Serial.
+                        </span>
+                        <span slot="not-allowed" class="tool-message">
+                            Open this installer from the GitHub Pages HTTPS URL.
+                        </span>
+                    </esp-web-install-button>
+                </section>
+
+                <section class="panel output-panel">
+                    <div class="section-heading">
+                        <h2>Build</h2>
+                    </div>
+                    <dl class="settings-summary">
+                        <div>
+                            <dt>Board</dt>
+                            <dd>M5Stack CoreS3</dd>
+                        </div>
+                        <div>
+                            <dt>Chip family</dt>
+                            <dd>ESP32-S3</dd>
+                        </div>
+                        <div>
+                            <dt>Image</dt>
+                            <dd>PlatformIO factory firmware</dd>
+                        </div>
+                    </dl>
+                    <div class="security-note">
+                        <strong>Hardware focus</strong>
+                        <span>
+                            This ESP Web Tools installer is especially designed
+                            for the M5Stack CoreS3 running Neon Meter firmware.
+                        </span>
+                    </div>
+                </section>
+            </section>
+        </main>
+    </body>
+</html>

@@ -1,0 +1,26 @@
+{
+  "name": "neon-meter",
+  "version": "0.1.0",
+  "private": true,
+  "description": "M5Stack CoreS3 LVGL usage dashboard for Claude Code and ChatGPT/Codex provider payloads.",
+  "license": "AGPL-3.0-or-later",
+  "homepage": "https://sunbox.github.io/neon-meter/",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/SunboX/neon-meter.git"
+  },
+  "bugs": {
+    "url": "https://github.com/SunboX/neon-meter/issues"
+  },
+  "scripts": {
+    "validate:web-tools": "node scripts/validate_esp_web_tools.mjs",
+    "test": "PATH=$HOME/.platformio/penv/bin:$PATH pio test -e native",
+    "build": "PATH=$HOME/.platformio/penv/bin:$PATH pio run -e m5stack-cores3",
+    "upload": "PATH=$HOME/.platformio/penv/bin:$PATH pio run -e m5stack-cores3 -t upload",
+    "monitor": "PATH=$HOME/.platformio/penv/bin:$PATH pio device monitor -b 115200",
+    "screenshots": "node scripts/render_readme_screenshots.mjs"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

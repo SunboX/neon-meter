@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="320" height="240" viewBox="0 0 320 240" role="img">
+  <title>Neon Meter firmware screen render</title>
+  <defs>
+    <filter id="cyanGlow" x="-60%" y="-60%" width="220%" height="220%">
+      <feGaussianBlur stdDeviation="2.4" result="blur"/>
+      <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <filter id="barGlow" x="-20%" y="-120%" width="140%" height="340%">
+      <feGaussianBlur stdDeviation="1.8" result="blur"/>
+      <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <filter id="softPanelGlow" x="-8%" y="-24%" width="116%" height="148%">
+      <feDropShadow dx="0" dy="0" stdDeviation="2.5" flood-color="#00f5ff" flood-opacity="0.2"/>
+    </filter>
+    <filter id="orangeGlow" x="-8%" y="-28%" width="116%" height="156%">
+      <feDropShadow dx="0" dy="0" stdDeviation="2.5" flood-color="#ff6a00" flood-opacity="0.22"/>
+    </filter>
+    <style>
+      text { font-family: "Montserrat", "Avenir Next", "Segoe UI", sans-serif; letter-spacing: 0; }
+    </style>
+  </defs>
+  <rect width="100%" height="100%" fill="#02050d"/>
+  <g><rect x="10" y="9" width="46" height="30" rx="6" fill="#07111b" filter="url(#cyanGlow)"/>
+<path d="M 18.00 32.00 A 15 15 0 0 1 48.00 32.00" stroke="#1a3146" stroke-width="4" stroke-linecap="round" fill="none"/>
+<path d="M 20.00 32.00 A 13 13 0 0 1 42.66 23.30" stroke="#00f5ff" stroke-width="2" stroke-linecap="round" fill="none"/>
+<rect x="22" y="34" width="24" height="2" rx="1" fill="#2d4a62"/>
+<rect x="31" y="12" width="4" height="24" rx="2" fill="#00f5ff" transform="rotate(38 33 24)" filter="url(#cyanGlow)"/>
+<circle cx="27" cy="33" r="4" fill="#00f5ff"/>
+<circle cx="27" cy="33" r="2" fill="#07111b"/>
+<circle cx="42.5" cy="15.5" r="2.5" fill="#ff6a00"/>
+<circle cx="20.5" cy="32.5" r="1.5" fill="#7efcff"/>
+<circle cx="45.5" cy="32.5" r="1.5" fill="#ffb05f"/></g>
+<rect x="10" y="44" width="300" height="2" rx="1" fill="#00f5ff" opacity="0.95" filter="url(#cyanGlow)"/>
+<text x="310" y="33" fill="#00f5ff" font-size="16" font-weight="600" text-anchor="end" dominant-baseline="alphabetic">100%</text>
+  <text x="168" y="35" fill="#00f5ff" font-size="32" font-weight="600" text-anchor="middle" dominant-baseline="alphabetic">ChatGPT</text>
+  <g><rect x="10" y="56" width="300" height="72" rx="6" fill="#09111d" opacity="0.86" stroke="#00f5ff" stroke-width="1" stroke-opacity="0.22" filter="url(#softPanelGlow)"/>
+<text x="34" y="86" fill="#effcff" font-size="28" font-weight="650" text-anchor="start" dominant-baseline="alphabetic">8%</text>
+<text x="290" y="79" fill="#00f5ff" font-size="14" font-weight="600" text-anchor="end" dominant-baseline="alphabetic">Session</text>
+<rect x="34" y="93" width="252" height="10" rx="4" fill="#06101a" opacity="1"/>
+<rect x="34" y="93" width="20" height="10" rx="4" fill="#6dffa8" filter="url(#barGlow)"/>
+<text x="34" y="116" fill="#31eaff" font-size="12" font-weight="500" text-anchor="start" dominant-baseline="alphabetic">Resets in 3h 35m</text></g>
+  <g><rect x="10" y="136" width="300" height="72" rx="6" fill="#09111d" opacity="0.86" stroke="#00f5ff" stroke-width="1" stroke-opacity="0.22" filter="url(#softPanelGlow)"/>
+<text x="34" y="166" fill="#effcff" font-size="28" font-weight="650" text-anchor="start" dominant-baseline="alphabetic">98%</text>
+<text x="290" y="159" fill="#00f5ff" font-size="14" font-weight="600" text-anchor="end" dominant-baseline="alphabetic">Weekly</text>
+<rect x="34" y="173" width="252" height="10" rx="4" fill="#06101a" opacity="1"/>
+<rect x="34" y="173" width="247" height="10" rx="4" fill="#ffb8c4" filter="url(#barGlow)"/>
+<text x="34" y="196" fill="#31eaff" font-size="12" font-weight="500" text-anchor="start" dominant-baseline="alphabetic">Resets in 3d 2h</text></g>
+  <g><circle cx="60.75999999999999" cy="222" r="3" fill="#ff6a00"/>
+<circle cx="69.75999999999999" cy="222" r="3" fill="#ff6a00" opacity="0.45"/>
+<circle cx="78.75999999999999" cy="222" r="3" fill="#ff6a00" opacity="0.25"/>
+<text x="89.75999999999999" y="226" fill="#ff6a00" font-size="14" font-weight="600" text-anchor="start" dominant-baseline="alphabetic">Quiet - 5h 8% / 7d 98%</text></g>
+</svg>
