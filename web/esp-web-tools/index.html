@@ -4,11 +4,7 @@
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title>Neon Meter Web Installer</title>
-        <link
-            rel="icon"
-            href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='10' fill='%23050914'/%3E%3Ccircle cx='32' cy='34' r='17' fill='none' stroke='%2300f5ff' stroke-width='5'/%3E%3Cpath d='M32 34 L47 24' stroke='%23ff6a00' stroke-width='5' stroke-linecap='round'/%3E%3C/svg%3E"
-            type="image/svg+xml"
-        />
+        <link rel="icon" href="neon-meter-icon.svg" type="image/svg+xml" />
         <link rel="stylesheet" href="style.css" />
         <script
             type="module"
@@ -20,7 +16,11 @@
             <header class="topbar">
                 <div class="brand">
                     <div class="brand-mark" aria-hidden="true">
-                        <span class="meter-glyph"></span>
+                        <img
+                            class="brand-icon"
+                            src="neon-meter-icon.svg"
+                            alt=""
+                        />
                     </div>
                     <div>
                         <p class="eyebrow">ESP Web Tools</p>

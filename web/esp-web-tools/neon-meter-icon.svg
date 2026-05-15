@@ -1,0 +1,57 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-labelledby="title desc">
+    <title>Neon Meter</title>
+    <desc>Dark neon gauge icon with a cyan meter slash and orange signal node.</desc>
+    <defs>
+        <linearGradient id="bg" x1="64" x2="448" y1="48" y2="464" gradientUnits="userSpaceOnUse">
+            <stop stop-color="#142337" />
+            <stop offset="0.58" stop-color="#07101d" />
+            <stop offset="1" stop-color="#03060d" />
+        </linearGradient>
+        <linearGradient id="slash" x1="196" x2="336" y1="354" y2="146" gradientUnits="userSpaceOnUse">
+            <stop stop-color="#00f5ff" />
+            <stop offset="1" stop-color="#ff6a00" />
+        </linearGradient>
+        <filter id="cyanGlow" x="-50%" y="-50%" width="200%" height="200%">
+            <feGaussianBlur stdDeviation="8" result="blur" />
+            <feMerge>
+                <feMergeNode in="blur" />
+                <feMergeNode in="SourceGraphic" />
+            </feMerge>
+        </filter>
+    </defs>
+    <rect width="512" height="512" rx="112" fill="url(#bg)" />
+    <path
+        d="M92 342c0-90.6 73.4-164 164-164s164 73.4 164 164"
+        fill="none"
+        stroke="#1a3146"
+        stroke-linecap="round"
+        stroke-width="42"
+    />
+    <path
+        d="M92 342c0-90.6 73.4-164 164-164 42.4 0 81.1 16.1 110.2 42.5"
+        fill="none"
+        filter="url(#cyanGlow)"
+        stroke="#00f5ff"
+        stroke-linecap="round"
+        stroke-width="18"
+    />
+    <path
+        d="M194 358l126-210"
+        fill="none"
+        filter="url(#cyanGlow)"
+        stroke="url(#slash)"
+        stroke-linecap="round"
+        stroke-width="34"
+    />
+    <circle cx="194" cy="358" r="25" fill="#07101d" stroke="#00f5ff" stroke-width="12" />
+    <circle cx="333" cy="139" r="18" fill="#ff6a00" filter="url(#cyanGlow)" />
+    <circle cx="128" cy="342" r="10" fill="#7efcff" opacity="0.84" />
+    <circle cx="384" cy="342" r="10" fill="#ffb05f" opacity="0.84" />
+    <path
+        d="M128 408h256"
+        fill="none"
+        stroke="#2d4a62"
+        stroke-linecap="round"
+        stroke-width="16"
+    />
+</svg>
