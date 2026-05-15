@@ -10,6 +10,7 @@ except NameError:
 
 
 def patch_m5gfx_manifest() -> None:
+    """Exclude M5GFX LVGL shim sources that conflict with the real LVGL library."""
     if env is not None:
         libdeps = Path(env.subst("$PROJECT_LIBDEPS_DIR"))
     else:

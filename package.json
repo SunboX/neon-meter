@@ -15,6 +15,7 @@
   "scripts": {
     "validate:web-tools": "node scripts/validate_esp_web_tools.mjs",
     "test": "PATH=$HOME/.platformio/penv/bin:$PATH pio test -e native",
+    "prebuild": "PATH=$HOME/.platformio/penv/bin:$PATH pio pkg install -e m5stack-cores3 && python3 scripts/patch_m5gfx.py",
     "build": "PATH=$HOME/.platformio/penv/bin:$PATH pio run -e m5stack-cores3",
     "upload": "PATH=$HOME/.platformio/penv/bin:$PATH pio run -e m5stack-cores3 -t upload",
     "monitor": "PATH=$HOME/.platformio/penv/bin:$PATH pio device monitor -b 115200",
