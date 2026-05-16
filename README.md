@@ -42,9 +42,9 @@ For host compatibility details and provider payload examples, see
 
 ## License
 
-Neon Meter uses the same public/commercial licensing scheme as
-[SunboX/labelprinter_app](https://github.com/SunboX/labelprinter_app). Firmware
-and tooling are licensed under AGPL-3.0-or-later. Documentation and project
-notices are licensed under CC-BY-SA-4.0. See [LICENSE](LICENSE),
-[COMMERCIAL-LICENSE.md](COMMERCIAL-LICENSE.md), [NOTICE.md](NOTICE.md), and
-the [LICENSES](LICENSES) directory.
+Firmware and tooling are licensed under AGPL-3.0-or-later. Documentation and
+project notices are licensed under CC-BY-SA-4.0. A separate
+commercial/proprietary license may be available from the copyright holder.
+
+See [LICENSE](LICENSE), [COMMERCIAL-LICENSE.md](COMMERCIAL-LICENSE.md),
+[NOTICE.md](NOTICE.md), and the [LICENSES](LICENSES) directory.
