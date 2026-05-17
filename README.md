@@ -6,8 +6,8 @@ Clawdmeter, with support for Claude-compatible payloads plus ChatGPT/Codex
 provider labels.
 
 Credentials stay off the device: the required
-[Neon Meter Host](https://github.com/SunboX/neon-meter-host) companion project
-fetches usage data and sends compact JSON over BLE.
+[Neon Meter Host](https://github.com/SunboX/neon-meter-host) companion app
+fetches usage data and sends compact JSON over USB serial or BLE.
 
 ## Easy Install with ESP Web Tools
 
@@ -34,8 +34,9 @@ Most users do not need PlatformIO or a local firmware build.
 ## Documentation
 
 - [Development workflow](docs/development.md)
-- [BLE protocol and payload format](docs/protocol.md)
+- [USB/BLE protocol and payload format](docs/protocol.md)
 - [Firmware implementation spec](specs/neon-meter-firmware.md)
+- [Changelog](CHANGELOG.md)
 
 For host compatibility details and provider payload examples, see
 [docs/protocol.md](docs/protocol.md).

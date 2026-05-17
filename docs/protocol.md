@@ -1,4 +1,62 @@
-# BLE Protocol
+# Device Protocol
+
+Neon Meter accepts the same compact provider payload over USB serial and BLE.
+USB serial is preferred by the host app when a CoreS3 is connected by cable;
+BLE remains the wireless fallback.
+
+## USB Serial Protocol
+
+USB uses the CoreS3 CDC serial interface at `115200` baud. Hosts must set DTR
+high so ESP32-S3 USB CDC delivers serial traffic, and should keep RTS low to
+avoid toggling the boot/reset line. Frames are UTF-8 JSON objects delimited by
+`\n`. The firmware may also print diagnostic text on the same serial stream, so
+hosts must ignore non-JSON lines and unknown JSON frames.
+
+### Handshake
+
+The host probes a serial port by writing:
+
+```json
+{"type":"hello","protocol":"neon-meter-usb","version":1}
+```
+
+The firmware responds:
+
+```json
+{"type":"hello","protocol":"neon-meter-usb","version":1,"device":"Neon Meter"}
+```
+
+After a successful handshake, the host sends a heartbeat every 5 seconds:
+
+```json
+{"type":"ping","protocol":"neon-meter-usb","version":1}
+```
+
+The firmware does not answer `ping`. Any valid inbound USB protocol frame keeps
+the USB app connection active; if no such frame arrives for more than 15
+seconds, the device clears the USB connected state and returns to its normal BLE
+or waiting status.
+
+### Payload
+
+The host writes the provider bundle inside a typed payload frame:
+
+```json
+{"type":"payload","payload":{"rotationSeconds":30,"providers":[]}}
+```
+
+For compatibility, the firmware also accepts a raw provider bundle or raw
+single-provider object as one newline-delimited JSON line.
+
+### USB Control Frames
+
+The firmware sends these control frames:
+
+| Frame | Meaning |
+| --- | --- |
+| `{"type":"ack","ack":true}` | Payload accepted. |
+| `{"type":"err","err":true}` | Payload rejected or failed to parse. |
+| `{"type":"refresh-requested"}` | Host should send a fresh provider bundle. |
 
 ## Service
 

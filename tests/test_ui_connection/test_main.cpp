@@ -4,10 +4,11 @@
 
 /** Verifies the waiting screen stays visible until BLE connects. */
 void testWaitingScreenShowsUntilBleConnects(void) {
-    TEST_ASSERT_TRUE(shouldShowWaitingForConnection(BleStateInit));
-    TEST_ASSERT_TRUE(shouldShowWaitingForConnection(BleStateAdvertising));
-    TEST_ASSERT_TRUE(shouldShowWaitingForConnection(BleStateDisconnected));
-    TEST_ASSERT_FALSE(shouldShowWaitingForConnection(BleStateConnected));
+    TEST_ASSERT_TRUE(shouldShowWaitingForConnection(BleStateInit, false));
+    TEST_ASSERT_TRUE(shouldShowWaitingForConnection(BleStateAdvertising, false));
+    TEST_ASSERT_TRUE(shouldShowWaitingForConnection(BleStateDisconnected, false));
+    TEST_ASSERT_FALSE(shouldShowWaitingForConnection(BleStateConnected, false));
+    TEST_ASSERT_FALSE(shouldShowWaitingForConnection(BleStateAdvertising, true));
 }
 
 /** Runs the UI connection-state native test suite. */

@@ -4,8 +4,10 @@
 
 #include "ble_service.h"
 #include "m5_hal.h"
+#include "serial_protocol.h"
 #include "splash.h"
 #include "ui.h"
+#include "usb_connection_state.h"
 #include "usage_model.h"
 #include "usage_rate.h"
 
@@ -18,6 +20,7 @@ static UsageBundle usageBundle = {};
 static UsageRateTracker rateTracker;
 static size_t activeUsageIndex = 0;
 static uint32_t lastUsageRotationMs = 0;
+static UsbConnectionState usbConnection = {};
 
 /** Gives LVGL the Arduino millis() clock. */
 static uint32_t lvTick() {
@@ -91,12 +94,54 @@ static void applyUsageItem(size_t index, bool trackRate) {
                   usage.provider, usage.primaryPct, usage.secondaryPct, rateTracker.getGroup());
 }
 
-/** Parses and applies one provider bundle from BLE or serial. */
-static void handlePayload(const char *json) {
+/** Prints one formatted USB serial protocol control frame. */
+static void printSerialProtocolFrame(void (*formatter)(char *, size_t)) {
+    char buffer[128] = {};
+    formatter(buffer, sizeof(buffer));
+    Serial.println(buffer);
+}
+
+/** Sends a successful USB serial payload acknowledgement. */
+static void sendSerialAck() {
+    printSerialProtocolFrame(formatSerialProtocolAck);
+}
+
+/** Sends a rejected USB serial payload acknowledgement. */
+static void sendSerialNack() {
+    printSerialProtocolFrame(formatSerialProtocolNack);
+}
+
+/** Announces the USB serial protocol to the connected host. */
+static void sendSerialHello() {
+    printSerialProtocolFrame(formatSerialProtocolHello);
+}
+
+/** Asks the USB serial host for a fresh provider payload. */
+static void requestSerialRefresh() {
+    printSerialProtocolFrame(formatSerialProtocolRefreshRequest);
+}
+
+/** Marks inbound USB serial protocol activity for the UI. */
+static void markUsbProtocolActivity() {
+    bool wasConnected = isUsbProtocolConnected(&usbConnection);
+    noteUsbProtocolActivity(&usbConnection, millis());
+    if (!wasConnected) uiUpdateUsbStatus(true);
+}
+
+/** Clears the USB UI state after the host app heartbeat stops. */
+static void expireUsbProtocolConnectionIfNeeded() {
+    if (expireUsbProtocolIfInactive(&usbConnection, millis())) {
+        uiUpdateUsbStatus(false);
+    }
+}
+
+/** Parses and applies one provider bundle from BLE or USB serial. */
+static void handlePayload(const char *json, bool notifyBle, bool notifySerial) {
     UsageBundle next = {};
     if (!parseUsageBundleJson(json, &next)) {
         Serial.println("Payload parse failed");
-        sendBleNack();
+        if (notifyBle) sendBleNack();
+        if (notifySerial) sendSerialNack();
         return;
     }
 
@@ -104,7 +149,8 @@ static void handlePayload(const char *json) {
     activeUsageIndex = 0;
     lastUsageRotationMs = millis();
     applyUsageItem(activeUsageIndex, true);
-    sendBleAck();
+    if (notifyBle) sendBleAck();
+    if (notifySerial) sendSerialAck();
     Serial.printf("Provider bundle accepted: count=%u rotationMs=%lu\n",
                   static_cast<unsigned>(usageBundle.count),
                   static_cast<unsigned long>(usageBundle.rotationMs));
@@ -122,9 +168,24 @@ static void rotateUsageBundleIfNeeded() {
                   usage.provider, static_cast<unsigned>(activeUsageIndex));
 }
 
-/** Reads newline-delimited JSON payloads from USB serial. */
-static void handleSerialJson() {
-    static char serialBuffer[640];
+/** Handles one parsed USB serial protocol frame. */
+static void handleSerialProtocolMessage(const SerialProtocolMessage &message) {
+    if (!message.valid) return;
+    if (message.type == SerialProtocolMessageHello) {
+        markUsbProtocolActivity();
+        sendSerialHello();
+        if (usageBundle.count == 0) requestSerialRefresh();
+    } else if (message.type == SerialProtocolMessagePing) {
+        markUsbProtocolActivity();
+    } else if (message.type == SerialProtocolMessagePayload) {
+        markUsbProtocolActivity();
+        handlePayload(message.payload, false, true);
+    }
+}
+
+/** Reads newline-delimited USB serial protocol frames. */
+static void handleSerialProtocolFrames() {
+    static char serialBuffer[kSerialProtocolPayloadSize];
     static size_t serialPos = 0;
 
     while (Serial.available()) {
@@ -132,7 +193,10 @@ static void handleSerialJson() {
         if (incoming == '\n' || incoming == '\r') {
             if (serialPos > 0) {
                 serialBuffer[serialPos] = '\0';
-                if (serialBuffer[0] == '{') handlePayload(serialBuffer);
+                SerialProtocolMessage message = {};
+                if (parseSerialProtocolLine(serialBuffer, &message)) {
+                    handleSerialProtocolMessage(message);
+                }
                 serialPos = 0;
             }
         } else if (serialPos < sizeof(serialBuffer) - 1) {
@@ -146,7 +210,8 @@ void setup() {
     hardwareInit(kSerialBaud);
     Serial.begin(kSerialBaud);
     delay(250);
-    Serial.println("{\"ready\":true,\"device\":\"Neon Meter\"}");
+    sendSerialHello();
+    requestSerialRefresh();
 
     setDisplayBrightness(180);
     fillDisplayBlack();
@@ -172,7 +237,8 @@ void loop() {
     splashTick();
     rotateUsageBundleIfNeeded();
     bleTick();
-    handleSerialJson();
+    handleSerialProtocolFrames();
+    expireUsbProtocolConnectionIfNeeded();
 
     static BleState lastBleState = BleStateInit;
     BleState bleState = getBleState();
@@ -193,7 +259,7 @@ void loop() {
     }
 
     if (bleHasData()) {
-        handlePayload(readBleData());
+        handlePayload(readBleData(), true, false);
     }
 
     delay(5);

@@ -35,6 +35,11 @@ void uiTickAnimation();
 void uiUpdateBleStatus(BleState state, const char *name, const char *address);
 
 /**
+ * Updates whether USB serial has an active protocol host.
+ */
+void uiUpdateUsbStatus(bool connected);
+
+/**
  * Updates the battery indicator text.
  */
 void uiUpdateBattery(int percent, bool charging);

@@ -39,6 +39,7 @@ static lv_obj_t *waitingStatusLabel = nullptr;
 static Screen currentScreen = ScreenUsage;
 static Screen previousNonSplashScreen = ScreenUsage;
 static bool waitingForConnection = false;
+static bool usbConnected = false;
 static uint32_t animationLastMs = 0;
 static uint8_t footerLoaderFrame = 0;
 static UsageData footerUsageData = {};
@@ -499,9 +500,14 @@ void uiUpdate(const UsageData *data, int rateGroup) {
     updateUsageFooter();
 }
 
-/** Updates the waiting screen text from the BLE state. */
+/** Updates the waiting screen text from the active device transport state. */
 static void updateWaitingStatus(BleState state) {
     if (!waitingStatusLabel) return;
+    if (usbConnected) {
+        lv_label_set_text(waitingStatusLabel, "USB connected");
+        lv_obj_set_style_text_color(waitingStatusLabel, kThemeGreen, 0);
+        return;
+    }
     switch (state) {
     case BleStateAdvertising:
         lv_label_set_text(waitingStatusLabel, "Bluetooth advertising");
@@ -563,7 +569,15 @@ void uiUpdateBleStatus(BleState state, const char *name, const char *address) {
     if (address) lv_label_set_text_fmt(bleAddressLabel, "Address: %s", address);
 
     updateWaitingStatus(state);
-    setWaitingVisible(shouldShowWaitingForConnection(state));
+    setWaitingVisible(shouldShowWaitingForConnection(state, usbConnected));
+}
+
+/** Applies USB protocol state to the waiting overlay. */
+void uiUpdateUsbStatus(bool connected) {
+    usbConnected = connected;
+    BleState state = getBleState();
+    updateWaitingStatus(state);
+    setWaitingVisible(shouldShowWaitingForConnection(state, usbConnected));
 }
 
 /** Applies battery state to the shared header label. */

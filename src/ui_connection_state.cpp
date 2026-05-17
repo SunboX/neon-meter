@@ -1,6 +1,6 @@
 #include "ui_connection_state.h"
 
-/** Returns true until BLE reaches the connected state. */
-bool shouldShowWaitingForConnection(BleState state) {
-    return state != BleStateConnected;
+/** Returns true until BLE or USB reaches a connected state. */
+bool shouldShowWaitingForConnection(BleState state, bool usbConnected) {
+    return state != BleStateConnected && !usbConnected;
 }
