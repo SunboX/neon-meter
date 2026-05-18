@@ -66,3 +66,8 @@ void sendBleNack();
  * Asks the connected host to send a fresh provider payload.
  */
 void requestBleRefresh();
+
+/**
+ * Returns the BLE firmware metadata characteristic UUID.
+ */
+const char *getBleMetadataUuid();

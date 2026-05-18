@@ -1,10 +1,12 @@
 #include "ui.h"
 
 #include "ble_service.h"
+#include "firmware_info.h"
 #include "splash.h"
 #include "theme.h"
 #include "ui_connection_state.h"
 #include "ui_footer.h"
+#include "ui_gauge.h"
 #include "ui_footer_loader.h"
 #include "ui_layout.h"
 
@@ -47,11 +49,16 @@ static int footerRateGroup = 0;
 
 static void applySharedVisibility();
 
-/** Returns the progress color for a provider percentage. */
-static lv_color_t percentColor(float percent) {
-    if (percent >= 80.0f) return kThemeRed;
-    if (percent >= 50.0f) return kThemeAmber;
-    return kThemeGreen;
+/** Returns the LVGL fill color for a remaining-capacity gauge bucket. */
+static lv_color_t gaugeColor(UiGauge::UsageGaugeColor color) {
+    switch (color) {
+    case UiGauge::UsageGaugeColor::Red:
+        return kThemeRed;
+    case UiGauge::UsageGaugeColor::Amber:
+        return kThemeAmber;
+    default:
+        return kThemeGreen;
+    }
 }
 
 /** Applies the flat screen background expected by the limited color display. */
@@ -106,6 +113,13 @@ static lv_obj_t *makePanel(lv_obj_t *parent, int x, int y, int width, int height
     lv_obj_set_style_pad_all(panel, 0, 0);
     lv_obj_clear_flag(panel, LV_OBJ_FLAG_SCROLLABLE);
     lv_obj_add_flag(panel, LV_OBJ_FLAG_EVENT_BUBBLE);
+    return panel;
+}
+
+/** Creates an Info screen panel with the lighter usage-card background. */
+static lv_obj_t *makeInfoPanel(lv_obj_t *parent, int x, int y, int width, int height) {
+    lv_obj_t *panel = makePanel(parent, x, y, width, height);
+    lv_obj_set_style_bg_color(panel, kThemeUsagePanel, 0);
     return panel;
 }
 
@@ -184,6 +198,7 @@ static void makeUsagePanel(lv_obj_t *parent, int y, const char *label,
                            lv_obj_t **percentLabel, lv_obj_t **pillLabel, lv_obj_t **progressBar,
                            lv_obj_t **resetLabel) {
     lv_obj_t *panel = makePanel(parent, kMargin, y, kPanelWidth, kPanelHeight);
+    lv_obj_set_style_bg_color(panel, kThemeUsagePanel, 0);
 
     *percentLabel = lv_label_create(panel);
     lv_label_set_text(*percentLabel, "--%");
@@ -196,7 +211,7 @@ static void makeUsagePanel(lv_obj_t *parent, int y, const char *label,
     *pillLabel = makePill(panel, label);
     lv_obj_align(*pillLabel, LV_ALIGN_TOP_RIGHT, -20, kPanelPillTextY);
 
-    *progressBar = makeBar(panel, 24, kPanelBarY, kPanelWidth - 48, 10);
+    *progressBar = makeBar(panel, kPanelBarX, kPanelBarY, kPanelBarWidth, 10);
 
     *resetLabel = lv_label_create(panel);
     lv_label_set_text(*resetLabel, "---");
@@ -369,32 +384,32 @@ static void initBluetoothScreen(lv_obj_t *screenObject) {
     addHeaderAccent(bleContainer);
 
     lv_obj_t *bleTitle = lv_label_create(bleContainer);
-    lv_label_set_text(bleTitle, "Bluetooth");
+    lv_label_set_text(bleTitle, kInfoScreenTitle);
     lv_obj_set_style_text_font(bleTitle, &lv_font_montserrat_28, 0);
     lv_obj_set_style_text_color(bleTitle, kThemeAccent, 0);
     lv_obj_align(bleTitle, LV_ALIGN_TOP_MID, 12, kTitleY);
 
-    lv_obj_t *info = makePanel(bleContainer, kMargin, kContentY, kPanelWidth, 86);
+    lv_obj_t *info = makeInfoPanel(bleContainer, kMargin, kContentY, kPanelWidth, 86);
 
     bleStatusLabel = lv_label_create(info);
     lv_label_set_text(bleStatusLabel, "Initializing");
     lv_obj_set_style_text_font(bleStatusLabel, &lv_font_montserrat_24, 0);
     lv_obj_set_style_text_color(bleStatusLabel, kThemeDim, 0);
-    lv_obj_set_pos(bleStatusLabel, 0, -2);
+    lv_obj_set_pos(bleStatusLabel, kInfoStatusTextX, kInfoStatusTextY);
 
     bleDeviceLabel = lv_label_create(info);
     lv_label_set_text(bleDeviceLabel, "Device: ---");
     lv_obj_set_style_text_font(bleDeviceLabel, &lv_font_montserrat_14, 0);
     lv_obj_set_style_text_color(bleDeviceLabel, kThemeDim, 0);
-    lv_obj_set_pos(bleDeviceLabel, 0, 34);
+    lv_obj_set_pos(bleDeviceLabel, kInfoStatusTextX, kInfoDeviceTextY);
 
     bleAddressLabel = lv_label_create(info);
     lv_label_set_text(bleAddressLabel, "Address: ---");
     lv_obj_set_style_text_font(bleAddressLabel, &lv_font_montserrat_14, 0);
     lv_obj_set_style_text_color(bleAddressLabel, kThemeDim, 0);
-    lv_obj_set_pos(bleAddressLabel, 0, 54);
+    lv_obj_set_pos(bleAddressLabel, kInfoStatusTextX, kInfoAddressTextY);
 
-    lv_obj_t *reset = makePanel(bleContainer, kMargin, kContentY + 96, kPanelWidth, 54);
+    lv_obj_t *reset = makeInfoPanel(bleContainer, kMargin, kContentY + 96, kPanelWidth, 54);
     lv_obj_set_style_shadow_color(reset, kThemeOrange, 0);
     lv_obj_add_event_cb(reset, handleBleResetClick, LV_EVENT_CLICKED, nullptr);
 
@@ -405,7 +420,7 @@ static void initBluetoothScreen(lv_obj_t *screenObject) {
     lv_obj_center(resetLabel);
 
     lv_obj_t *credit = lv_label_create(bleContainer);
-    lv_label_set_text(credit, "Neon Meter CoreS3");
+    lv_label_set_text(credit, kInfoFooterText);
     lv_obj_set_style_text_font(credit, &lv_font_montserrat_14, 0);
     lv_obj_set_style_text_color(credit, kThemeDim, 0);
     lv_obj_align(credit, LV_ALIGN_BOTTOM_MID, 0, -8);
@@ -477,13 +492,15 @@ void uiUpdate(const UsageData *data, int rateGroup) {
     lv_label_set_text(primaryNameLabel, data->primaryLabel);
     lv_label_set_text(secondaryNameLabel, data->secondaryLabel);
 
-    int primary = static_cast<int>(data->primaryPct + 0.5f);
-    int secondary = static_cast<int>(data->secondaryPct + 0.5f);
+    int primary = UiGauge::remainingPercent(data->primaryPct);
+    int secondary = UiGauge::remainingPercent(data->secondaryPct);
+    lv_color_t primaryGaugeColor = gaugeColor(UiGauge::colorForUsedPercent(data->primaryPct));
+    lv_color_t secondaryGaugeColor = gaugeColor(UiGauge::colorForUsedPercent(data->secondaryPct));
 
     lv_label_set_text_fmt(primaryPctLabel, "%d%%", primary);
     lv_bar_set_value(primaryBar, primary, LV_ANIM_ON);
-    lv_obj_set_style_bg_color(primaryBar, percentColor(data->primaryPct), LV_PART_INDICATOR);
-    lv_obj_set_style_shadow_color(primaryBar, percentColor(data->primaryPct), LV_PART_INDICATOR);
+    lv_obj_set_style_bg_color(primaryBar, primaryGaugeColor, LV_PART_INDICATOR);
+    lv_obj_set_style_shadow_color(primaryBar, primaryGaugeColor, LV_PART_INDICATOR);
 
     char buffer[48];
     formatResetTime(data->primaryResetMins, buffer, sizeof(buffer));
@@ -491,8 +508,8 @@ void uiUpdate(const UsageData *data, int rateGroup) {
 
     lv_label_set_text_fmt(secondaryPctLabel, "%d%%", secondary);
     lv_bar_set_value(secondaryBar, secondary, LV_ANIM_ON);
-    lv_obj_set_style_bg_color(secondaryBar, percentColor(data->secondaryPct), LV_PART_INDICATOR);
-    lv_obj_set_style_shadow_color(secondaryBar, percentColor(data->secondaryPct), LV_PART_INDICATOR);
+    lv_obj_set_style_bg_color(secondaryBar, secondaryGaugeColor, LV_PART_INDICATOR);
+    lv_obj_set_style_shadow_color(secondaryBar, secondaryGaugeColor, LV_PART_INDICATOR);
 
     formatResetTime(data->secondaryResetMins, buffer, sizeof(buffer));
     lv_label_set_text(secondaryResetLabel, buffer);
@@ -552,7 +569,7 @@ void uiUpdateBleStatus(BleState state, const char *name, const char *address) {
         lv_obj_set_style_text_color(bleStatusLabel, kThemeGreen, 0);
         break;
     case BleStateAdvertising:
-        lv_label_set_text(bleStatusLabel, "Advertising");
+        lv_label_set_text(bleStatusLabel, kBleAdvertisingStatusText);
         lv_obj_set_style_text_color(bleStatusLabel, kThemeAmber, 0);
         break;
     case BleStateDisconnected:

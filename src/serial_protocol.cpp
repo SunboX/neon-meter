@@ -1,5 +1,7 @@
 #include "serial_protocol.h"
 
+#include "firmware_info.h"
+
 #include <ArduinoJson.h>
 #include <stdio.h>
 #include <string.h>
@@ -74,8 +76,8 @@ bool parseSerialProtocolLine(const char *line, SerialProtocolMessage *out) {
 void formatSerialProtocolHello(char *buffer, size_t bufferLength) {
     if (!buffer || bufferLength == 0) return;
     snprintf(buffer, bufferLength,
-             "{\"type\":\"hello\",\"protocol\":\"%s\",\"version\":%d,\"device\":\"Neon Meter\"}",
-             kUsbProtocolName, kUsbProtocolVersion);
+             "{\"type\":\"hello\",\"protocol\":\"%s\",\"version\":%d,\"device\":\"Neon Meter\",\"firmwareVersion\":\"%s\",\"chipFamily\":\"%s\"}",
+             kUsbProtocolName, kUsbProtocolVersion, kFirmwareVersion, kFirmwareChipFamily);
 }
 
 /** Formats the successful payload acknowledgement control frame. */

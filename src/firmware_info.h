@@ -1,0 +1,31 @@
+#pragma once
+
+#include <stddef.h>
+#include <stdio.h>
+
+#ifndef NEON_METER_FIRMWARE_VERSION
+#define NEON_METER_FIRMWARE_VERSION "1.0.2"
+#endif
+
+/** Current firmware semantic version string. */
+constexpr const char *kFirmwareVersion = NEON_METER_FIRMWARE_VERSION;
+
+/** Firmware target chip family used by ESP Web Tools manifests. */
+constexpr const char *kFirmwareChipFamily = "ESP32-S3";
+
+/** Title shown on the BLE information screen. */
+constexpr const char *kInfoScreenTitle = "Info";
+
+/** Status label shown while BLE advertising is active. */
+constexpr const char *kBleAdvertisingStatusText = "BLE Advertising";
+
+/** Footer label shown at the bottom of the info screen. */
+constexpr const char *kInfoFooterText = "Neon Meter CoreS3 v" NEON_METER_FIRMWARE_VERSION;
+
+/** Formats non-secret firmware metadata as compact JSON. */
+inline void formatFirmwareMetadata(char *buffer, size_t bufferLength) {
+    if (!buffer || bufferLength == 0) return;
+    snprintf(buffer, bufferLength,
+             "{\"firmwareVersion\":\"%s\",\"chipFamily\":\"%s\"}",
+             kFirmwareVersion, kFirmwareChipFamily);
+}

@@ -34,17 +34,17 @@
 <rect x="10" y="44" width="300" height="2" rx="1" fill="#00f5ff" opacity="0.95" filter="url(#cyanGlow)"/>
 <text x="310" y="33" fill="#00f5ff" font-size="16" font-weight="600" text-anchor="end" dominant-baseline="alphabetic">100%</text>
   <text x="168" y="35" fill="#00f5ff" font-size="32" font-weight="600" text-anchor="middle" dominant-baseline="alphabetic">ChatGPT</text>
-  <g><rect x="10" y="56" width="300" height="72" rx="6" fill="#09111d" opacity="0.86" stroke="#00f5ff" stroke-width="1" stroke-opacity="0.22" filter="url(#softPanelGlow)"/>
-<text x="34" y="86" fill="#effcff" font-size="28" font-weight="650" text-anchor="start" dominant-baseline="alphabetic">8%</text>
+  <g><rect x="10" y="56" width="300" height="72" rx="6" fill="#0d1a28" opacity="0.86" stroke="#00f5ff" stroke-width="1" stroke-opacity="0.22" filter="url(#softPanelGlow)"/>
+<text x="34" y="86" fill="#effcff" font-size="28" font-weight="650" text-anchor="start" dominant-baseline="alphabetic">92%</text>
 <text x="290" y="79" fill="#00f5ff" font-size="14" font-weight="600" text-anchor="end" dominant-baseline="alphabetic">Session</text>
-<rect x="34" y="93" width="252" height="10" rx="4" fill="#06101a" opacity="1"/>
-<rect x="34" y="93" width="20" height="10" rx="4" fill="#6dffa8" filter="url(#barGlow)"/>
+<rect x="34" y="93" width="256" height="10" rx="4" fill="#102638" opacity="1"/>
+<rect x="34" y="93" width="236" height="10" rx="4" fill="#6dffa8" filter="url(#barGlow)"/>
 <text x="34" y="116" fill="#31eaff" font-size="12" font-weight="500" text-anchor="start" dominant-baseline="alphabetic">Resets in 3h 35m</text></g>
-  <g><rect x="10" y="136" width="300" height="72" rx="6" fill="#09111d" opacity="0.86" stroke="#00f5ff" stroke-width="1" stroke-opacity="0.22" filter="url(#softPanelGlow)"/>
-<text x="34" y="166" fill="#effcff" font-size="28" font-weight="650" text-anchor="start" dominant-baseline="alphabetic">98%</text>
+  <g><rect x="10" y="136" width="300" height="72" rx="6" fill="#0d1a28" opacity="0.86" stroke="#00f5ff" stroke-width="1" stroke-opacity="0.22" filter="url(#softPanelGlow)"/>
+<text x="34" y="166" fill="#effcff" font-size="28" font-weight="650" text-anchor="start" dominant-baseline="alphabetic">2%</text>
 <text x="290" y="159" fill="#00f5ff" font-size="14" font-weight="600" text-anchor="end" dominant-baseline="alphabetic">Weekly</text>
-<rect x="34" y="173" width="252" height="10" rx="4" fill="#06101a" opacity="1"/>
-<rect x="34" y="173" width="247" height="10" rx="4" fill="#ffb8c4" filter="url(#barGlow)"/>
+<rect x="34" y="173" width="256" height="10" rx="4" fill="#102638" opacity="1"/>
+<rect x="34" y="173" width="8" height="10" rx="4" fill="#ffb8c4" filter="url(#barGlow)"/>
 <text x="34" y="196" fill="#31eaff" font-size="12" font-weight="500" text-anchor="start" dominant-baseline="alphabetic">Resets in 3d 2h</text></g>
   <g><circle cx="60.75999999999999" cy="222" r="3" fill="#ff6a00"/>
 <circle cx="69.75999999999999" cy="222" r="3" fill="#ff6a00" opacity="0.45"/>

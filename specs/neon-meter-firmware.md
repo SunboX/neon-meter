@@ -15,7 +15,8 @@ brand assets.
 - Display stack: M5Unified/M5GFX for display, touch, battery, and button
   access.
 - UI stack: LVGL 9.
-- Transport: BLE GATT service using NimBLE-Arduino.
+- Transport: USB CDC serial and BLE GATT service using the Arduino BLE NimBLE
+  backend.
 
 ## User Experience
 
@@ -23,10 +24,12 @@ brand assets.
   - small neutral Neon Meter mark at top left,
   - title,
   - battery indicator,
-  - two usage panels with percent, label, progress bar, and reset/period detail,
+  - two usage panels with remaining percent, label, progress bar, and reset/period detail,
   - small data-backed status line with an animated dot loader at the bottom.
 - A Bluetooth screen shows connection state, advertised device name, BLE
   address, and a tap zone for clearing bonds.
+- Firmware version metadata is exposed to the host over USB hello frames and a
+  read-only BLE metadata characteristic so the host can offer updates.
 - A splash screen uses a neutral neon sweep animation instead of Claude
   crab/Clawd art or block-letter branding.
 - Touching the usage screen toggles the splash. Touching the splash returns to

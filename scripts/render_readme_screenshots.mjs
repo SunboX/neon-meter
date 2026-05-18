@@ -60,10 +60,16 @@ function parseConstants(source, existing = {}) {
   return constants;
 }
 
-/** Returns the usage-bar color used by the firmware threshold rules. */
-function percentColor(percent, theme) {
-  if (percent >= 80) return theme.kThemeRed;
-  if (percent >= 50) return theme.kThemeAmber;
+/** Returns the remaining-capacity percentage displayed by the firmware gauge. */
+function gaugeRemainingPercent(percent) {
+  return Math.max(0, Math.min(100, Math.round(100 - percent)));
+}
+
+/** Returns the usage-bar color used by the firmware gauge threshold rules. */
+function gaugeColor(percent, theme) {
+  const remaining = gaugeRemainingPercent(percent);
+  if (remaining <= 20) return theme.previewHighBar;
+  if (remaining <= 50) return theme.kThemeAmber;
   return theme.kThemeGreen;
 }
 
@@ -108,6 +114,7 @@ function previewTheme(theme) {
     ...theme,
     previewBg: theme.kThemeBg,
     previewPanel: theme.kThemePanel,
+    previewUsagePanel: theme.kThemeUsagePanel,
     previewPanelStroke: theme.kThemeAccent,
     previewBarTrack: theme.kThemeBarBg,
     previewDim: "#31eaff",
@@ -247,10 +254,12 @@ function text(x, y, value, options = {}) {
 /** Draws one rounded usage panel with progress state. */
 function usagePanel(layout, theme, y, data) {
   const panelX = layout.kMargin;
-  const barX = panelX + 24;
+  const barX = panelX + layout.kPanelBarX;
   const barY = y + layout.kPanelBarY + 1;
-  const barWidth = layout.kPanelWidth - 48;
-  const color = data.percent >= 80 ? theme.previewHighBar : percentColor(data.percent, theme);
+  const barWidth = layout.kPanelBarWidth;
+  const remaining = gaugeRemainingPercent(data.percent);
+  const fillWidth = remaining === 0 ? 0 : Math.max(8, Math.round((barWidth * remaining) / 100));
+  const color = gaugeColor(data.percent, theme);
 
   return el(
     "g",
@@ -262,14 +271,14 @@ function usagePanel(layout, theme, y, data) {
         width: layout.kPanelWidth,
         height: layout.kPanelHeight,
         rx: 6,
-        fill: theme.previewPanel,
+        fill: theme.previewUsagePanel,
         opacity: 0.86,
         stroke: theme.previewPanelStroke,
         "stroke-width": 1,
         "stroke-opacity": 0.22,
         filter: "url(#softPanelGlow)",
       }),
-      text(panelX + 24, y + 30, `${data.percent}%`, {
+      text(panelX + 24, y + 30, `${remaining}%`, {
         size: 28,
         weight: 650,
         fill: theme.previewText,
@@ -292,7 +301,7 @@ function usagePanel(layout, theme, y, data) {
       single("rect", {
         x: barX,
         y: barY,
-        width: Math.max(8, Math.round((barWidth * data.percent) / 100)),
+        width: fillWidth,
         height: 10,
         rx: 4,
         fill: color,
@@ -355,13 +364,13 @@ function renderUsageScreen(layout, theme) {
   ]);
 }
 
-/** Draws the Bluetooth setup screen shown in the README screenshots. */
-function renderBluetoothScreen(layout, theme) {
+/** Draws the BLE info screen shown in the README screenshots. */
+function renderBluetoothScreen(layout, theme, version) {
   const infoY = layout.kContentY;
   const resetY = layout.kContentY + 96;
   return svgDocument(layout, theme, [
     sharedHeader(layout, theme, "USB"),
-    text(layout.kScreenWidth / 2 + 12, 34, "Bluetooth", {
+    text(layout.kScreenWidth / 2 + 12, 34, "Info", {
       anchor: "middle",
       size: 28,
       weight: 600,
@@ -373,24 +382,24 @@ function renderBluetoothScreen(layout, theme) {
       width: layout.kPanelWidth,
       height: 86,
       rx: 6,
-      fill: theme.previewPanel,
+      fill: theme.previewUsagePanel,
       opacity: 0.86,
       stroke: theme.previewPanelStroke,
       "stroke-width": 1,
       "stroke-opacity": 0.22,
       filter: "url(#softPanelGlow)",
     }),
-    text(layout.kMargin + 20, infoY + 30, "Advertising", {
+    text(layout.kMargin + 20 + layout.kInfoTextOffset, infoY + 30 + layout.kInfoTextOffset, "BLE Advertising", {
       size: 24,
       weight: 600,
       fill: theme.kThemeAmber,
     }),
-    text(layout.kMargin + 20, infoY + 55, "Device: Neon Meter", {
+    text(layout.kMargin + 20 + layout.kInfoTextOffset, infoY + 55 + layout.kInfoTextOffset, "Device: Neon Meter", {
       size: 14,
       weight: 500,
       fill: theme.previewDim,
     }),
-    text(layout.kMargin + 20, infoY + 75, "Address: --:--:--:--:--:--", {
+    text(layout.kMargin + 20 + layout.kInfoTextOffset, infoY + 75 + layout.kInfoTextOffset, "Address: --:--:--:--:--:--", {
       size: 14,
       weight: 500,
       fill: theme.previewDim,
@@ -401,7 +410,7 @@ function renderBluetoothScreen(layout, theme) {
       width: layout.kPanelWidth,
       height: 54,
       rx: 6,
-      fill: theme.previewPanel,
+      fill: theme.previewUsagePanel,
       opacity: 0.86,
       stroke: theme.kThemeOrange,
       "stroke-width": 1,
@@ -414,7 +423,7 @@ function renderBluetoothScreen(layout, theme) {
       weight: 600,
       fill: theme.kThemeOrange,
     }),
-    text(layout.kScreenWidth / 2, layout.kScreenHeight - 14, "Neon Meter CoreS3", {
+    text(layout.kScreenWidth / 2, layout.kScreenHeight - 14, `Neon Meter CoreS3 v${version}`, {
       anchor: "middle",
       size: 14,
       weight: 500,
@@ -455,17 +464,19 @@ function svgDocument(layout, theme, children) {
 
 /** Generates all README screenshots. */
 async function main() {
-  const [themeSource, layoutSource, splashSource] = await Promise.all([
+  const [themeSource, layoutSource, splashSource, packageSource] = await Promise.all([
     readProjectFile("src/theme.h"),
     readProjectFile("src/ui_layout.h"),
     readProjectFile("src/splash_animation.h"),
+    readProjectFile("package.json"),
   ]);
   const theme = previewTheme(parseTheme(themeSource));
   const layout = parseConstants(splashSource, parseConstants(layoutSource));
+  const packageInfo = JSON.parse(packageSource);
 
   await mkdir(assetsDir, { recursive: true });
   await writeFile(join(assetsDir, "neon-meter-usage-screen.svg"), renderUsageScreen(layout, theme));
-  await writeFile(join(assetsDir, "neon-meter-bluetooth-screen.svg"), renderBluetoothScreen(layout, theme));
+  await writeFile(join(assetsDir, "neon-meter-bluetooth-screen.svg"), renderBluetoothScreen(layout, theme, packageInfo.version));
 }
 
 await main();

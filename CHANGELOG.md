@@ -1,5 +1,27 @@
 # Changelog
 
+## 1.0.2 - 2026-05-18
+
+### Added
+
+- Added firmware version metadata to USB hello frames and a read-only BLE
+  metadata characteristic.
+- Added an Info screen footer that shows the CoreS3 firmware version.
+
+### Changed
+
+- Switched usage gauges to display remaining capacity while preserving consumed
+  usage fields for host compatibility.
+- Updated the BLE service to use the Arduino NimBLE backend exposed through the
+  ESP32 BLE compatibility API.
+- Refined Info and usage panel spacing, backgrounds, and generated README
+  screenshots.
+
+### Validation
+
+- `npm test`
+- `npm run build`
+
 ## 1.0.1 - 2026-05-17
 
 ### Added

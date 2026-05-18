@@ -20,7 +20,7 @@ enum Screen {
 void uiInit();
 
 /**
- * Updates usage labels and progress bars from parsed provider data.
+ * Updates remaining usage labels and progress bars from parsed provider data.
  */
 void uiUpdate(const UsageData *data, int rateGroup);
 

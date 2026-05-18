@@ -96,7 +96,7 @@ static void applyUsageItem(size_t index, bool trackRate) {
 
 /** Prints one formatted USB serial protocol control frame. */
 static void printSerialProtocolFrame(void (*formatter)(char *, size_t)) {
-    char buffer[128] = {};
+    char buffer[192] = {};
     formatter(buffer, sizeof(buffer));
     Serial.println(buffer);
 }

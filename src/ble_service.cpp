@@ -1,19 +1,25 @@
 #include "ble_service.h"
 
+#include "firmware_info.h"
+
 #include <Arduino.h>
-#include <NimBLEDevice.h>
+#include <BLEDevice.h>
+#include <BLESecurity.h>
+#include <host/ble_store.h>
 
 static constexpr const char *kDeviceName = "Neon Meter";
 static constexpr const char *kServiceUuid = "41494d45-7465-7220-0000-000000000001";
 static constexpr const char *kRxCharUuid = "41494d45-7465-7220-0000-000000000002";
 static constexpr const char *kTxCharUuid = "41494d45-7465-7220-0000-000000000003";
 static constexpr const char *kRequestCharUuid = "41494d45-7465-7220-0000-000000000004";
+static constexpr const char *kMetadataCharUuid = "41494d45-7465-7220-0000-000000000005";
 static constexpr size_t kBleBufferSize = 1024;
 
-static NimBLEServer *bleServer = nullptr;
-static NimBLECharacteristic *rxChar = nullptr;
-static NimBLECharacteristic *txChar = nullptr;
-static NimBLECharacteristic *requestChar = nullptr;
+static BLEServer *bleServer = nullptr;
+static BLECharacteristic *rxChar = nullptr;
+static BLECharacteristic *txChar = nullptr;
+static BLECharacteristic *requestChar = nullptr;
+static BLECharacteristic *metadataChar = nullptr;
 static BleState bleState = BleStateInit;
 static bool needAdvertise = false;
 static char rxBuffer[kBleBufferSize];
@@ -23,10 +29,10 @@ static char addressText[18] = "---";
 
 /** Starts advertising with the documented Neon Meter service UUID. */
 static void startAdvertising() {
-    NimBLEAdvertising *advertising = NimBLEDevice::getAdvertising();
+    BLEAdvertising *advertising = BLEDevice::getAdvertising();
     advertising->reset();
     advertising->addServiceUUID(kServiceUuid);
-    advertising->enableScanResponse(true);
+    advertising->setScanResponse(true);
     advertising->setName(kDeviceName);
     bool started = advertising->start();
     bleState = BleStateAdvertising;
@@ -36,22 +42,24 @@ static void startAdvertising() {
 /**
  * Handles BLE central connect and disconnect events.
  */
-class BleServerCallbacks : public NimBLEServerCallbacks {
+class BleServerCallbacks : public BLEServerCallbacks {
     /**
      * Marks the service connected when a central attaches.
      */
-    void onConnect(NimBLEServer *server, NimBLEConnInfo &info) override {
+    void onConnect(BLEServer *server, ble_gap_conn_desc *desc) override {
         (void)server;
         bleState = BleStateConnected;
-        Serial.printf("BLE connected: %s\n", info.getAddress().toString().c_str());
+        BLEAddress address(desc->peer_id_addr);
+        Serial.printf("BLE connected: %s\n", address.toString().c_str());
     }
 
     /**
      * Marks the service disconnected and schedules advertising restart.
      */
-    void onDisconnect(NimBLEServer *server, NimBLEConnInfo &info, int reason) override {
+    void onDisconnect(BLEServer *server, ble_gap_conn_desc *desc) override {
         (void)server;
-        Serial.printf("BLE disconnected: %s reason=%d\n", info.getAddress().toString().c_str(), reason);
+        BLEAddress address(desc->peer_id_addr);
+        Serial.printf("BLE disconnected: %s\n", address.toString().c_str());
         bleState = BleStateDisconnected;
         needAdvertise = true;
     }
@@ -60,13 +68,13 @@ class BleServerCallbacks : public NimBLEServerCallbacks {
 /**
  * Handles provider payload writes from the connected host.
  */
-class BleRxCallbacks : public NimBLECharacteristicCallbacks {
+class BleRxCallbacks : public BLECharacteristicCallbacks {
     /**
      * Copies the written JSON payload into the firmware receive buffer.
      */
-    void onWrite(NimBLECharacteristic *characteristic, NimBLEConnInfo &info) override {
-        (void)info;
-        std::string value = characteristic->getValue();
+    void onWrite(BLECharacteristic *characteristic, ble_gap_conn_desc *desc) override {
+        (void)desc;
+        String value = characteristic->getValue();
         size_t length = value.length();
         if (length >= kBleBufferSize) length = kBleBufferSize - 1;
         memcpy(rxBuffer, value.c_str(), length);
@@ -79,13 +87,13 @@ class BleRxCallbacks : public NimBLECharacteristicCallbacks {
 /**
  * Handles host subscriptions to the refresh request characteristic.
  */
-class BleRequestCallbacks : public NimBLECharacteristicCallbacks {
+class BleRequestCallbacks : public BLECharacteristicCallbacks {
     /**
      * Requests an initial payload after the host subscribes.
      */
-    void onSubscribe(NimBLECharacteristic *characteristic, NimBLEConnInfo &info, uint16_t subValue) override {
+    void onSubscribe(BLECharacteristic *characteristic, ble_gap_conn_desc *desc, uint16_t subValue) override {
         (void)characteristic;
-        (void)info;
+        (void)desc;
         if (subValue != 0 && !hasReceivedData) {
             requestBleRefresh();
         }
@@ -94,10 +102,10 @@ class BleRequestCallbacks : public NimBLECharacteristicCallbacks {
 
 /** Starts NimBLE, creates all service characteristics, and advertises. */
 void bleInit() {
-    NimBLEDevice::init(kDeviceName);
-    NimBLEDevice::setSecurityAuth(true, false, true);
+    BLEDevice::init(kDeviceName);
+    BLESecurity::setAuthenticationMode(true, false, true);
 
-    NimBLEAddress address = NimBLEDevice::getAddress();
+    BLEAddress address = BLEDevice::getAddress();
     snprintf(addressText, sizeof(addressText), "%s", address.toString().c_str());
     for (int i = 0; addressText[i] != '\0'; i++) {
         if (addressText[i] >= 'a' && addressText[i] <= 'f') {
@@ -105,20 +113,29 @@ void bleInit() {
         }
     }
 
-    bleServer = NimBLEDevice::createServer();
+    bleServer = BLEDevice::createServer();
     static BleServerCallbacks serverCallbacks;
     bleServer->setCallbacks(&serverCallbacks);
 
-    NimBLEService *service = bleServer->createService(kServiceUuid);
-    rxChar = service->createCharacteristic(kRxCharUuid, NIMBLE_PROPERTY::WRITE | NIMBLE_PROPERTY::WRITE_NR);
+    BLEService *service = bleServer->createService(kServiceUuid);
+    rxChar = service->createCharacteristic(kRxCharUuid,
+                                           BLECharacteristic::PROPERTY_WRITE |
+                                               BLECharacteristic::PROPERTY_WRITE_NR);
     static BleRxCallbacks rxCallbacks;
     rxChar->setCallbacks(&rxCallbacks);
 
-    txChar = service->createCharacteristic(kTxCharUuid, NIMBLE_PROPERTY::READ | NIMBLE_PROPERTY::NOTIFY);
+    txChar = service->createCharacteristic(kTxCharUuid,
+                                           BLECharacteristic::PROPERTY_READ |
+                                               BLECharacteristic::PROPERTY_NOTIFY);
 
-    requestChar = service->createCharacteristic(kRequestCharUuid, NIMBLE_PROPERTY::NOTIFY);
+    requestChar = service->createCharacteristic(kRequestCharUuid, BLECharacteristic::PROPERTY_NOTIFY);
     static BleRequestCallbacks requestCallbacks;
     requestChar->setCallbacks(&requestCallbacks);
+
+    metadataChar = service->createCharacteristic(kMetadataCharUuid, BLECharacteristic::PROPERTY_READ);
+    char metadata[128] = {};
+    formatFirmwareMetadata(metadata, sizeof(metadata));
+    metadataChar->setValue(metadata);
 
     bleServer->start();
     startAdvertising();
@@ -150,10 +167,12 @@ const char *getBleAddress() {
 
 /** Deletes BLE bonds and disconnects the current central if needed. */
 void clearBleBonds() {
-    NimBLEDevice::deleteAllBonds();
+    ble_store_clear();
     Serial.println("BLE bonds cleared");
     if (bleState == BleStateConnected && bleServer && bleServer->getConnectedCount() > 0) {
-        bleServer->disconnect(bleServer->getPeerInfo(0).getConnHandle());
+        for (const auto &peer : bleServer->getPeerDevices(false)) {
+            bleServer->disconnect(peer.first);
+        }
     }
     needAdvertise = true;
 }
@@ -191,4 +210,9 @@ void requestBleRefresh() {
     requestChar->setValue(&payload, 1);
     requestChar->notify();
     Serial.println("BLE refresh requested");
+}
+
+/** Returns the BLE firmware metadata characteristic UUID. */
+const char *getBleMetadataUuid() {
+    return kMetadataCharUuid;
 }

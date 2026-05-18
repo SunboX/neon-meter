@@ -23,7 +23,7 @@ The host probes a serial port by writing:
 The firmware responds:
 
 ```json
-{"type":"hello","protocol":"neon-meter-usb","version":1,"device":"Neon Meter"}
+{"type":"hello","protocol":"neon-meter-usb","version":1,"device":"Neon Meter","firmwareVersion":"1.0.2","chipFamily":"ESP32-S3"}
 ```
 
 After a successful handshake, the host sends a heartbeat every 5 seconds:
@@ -68,6 +68,7 @@ The firmware advertises as `Neon Meter` and exposes a custom BLE GATT service:
 | RX write characteristic | `41494d45-7465-7220-0000-000000000002` |
 | TX notify/read characteristic | `41494d45-7465-7220-0000-000000000003` |
 | Refresh notify characteristic | `41494d45-7465-7220-0000-000000000004` |
+| Firmware metadata read characteristic | `41494d45-7465-7220-0000-000000000005` |
 
 The UUIDs are stable for host compatibility.
 
@@ -75,6 +76,15 @@ The host writes a compact UTF-8 JSON payload to RX. The device notifies TX with
 `{"ack":true}` or `{"err":true}`. When the host subscribes to the refresh
 characteristic and the device has no data yet, the device sends a one-byte
 notification to request a fresh payload.
+
+Newer firmware also exposes a read-only metadata characteristic:
+
+```json
+{"firmwareVersion":"1.0.2","chipFamily":"ESP32-S3"}
+```
+
+Hosts should treat this metadata as optional so older firmware remains
+connectable.
 
 ## Provider Bundle
 
@@ -134,6 +144,9 @@ Single compact provider objects remain supported for compatibility.
 | `st` | string | Provider status, such as `ok`, `allowed`, `limited`, or `error`. |
 | `detail` | string | Optional short status/spend note. |
 | `ok` | boolean | Whether the host-side fetch succeeded. |
+
+The `s` and `w` fields remain consumed usage percentages for host compatibility.
+The firmware displays them as remaining gauge capacity: `100 - s` and `100 - w`.
 
 ## Examples
 

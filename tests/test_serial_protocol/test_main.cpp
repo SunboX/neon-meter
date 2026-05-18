@@ -67,11 +67,11 @@ void testPingParsesAsControlFrame(void) {
 
 /** Verifies serial control frames use documented newline-delimited JSON. */
 void testSerialProtocolFormatsControlFrames(void) {
-    char buffer[128] = {};
+    char buffer[192] = {};
 
     formatSerialProtocolHello(buffer, sizeof(buffer));
     TEST_ASSERT_EQUAL_STRING(
-        "{\"type\":\"hello\",\"protocol\":\"neon-meter-usb\",\"version\":1,\"device\":\"Neon Meter\"}",
+        "{\"type\":\"hello\",\"protocol\":\"neon-meter-usb\",\"version\":1,\"device\":\"Neon Meter\",\"firmwareVersion\":\"1.0.2\",\"chipFamily\":\"ESP32-S3\"}",
         buffer);
 
     formatSerialProtocolAck(buffer, sizeof(buffer));

@@ -23,6 +23,22 @@ void testUsagePanelContentsUseRaisedAlignment(void) {
     TEST_ASSERT_LESS_THAN(UiLayout::kResetTextY, UiLayout::kPanelBarY);
 }
 
+/** Verifies usage bars widen only toward the right edge. */
+void testUsageBarWidensTowardRightEdge(void) {
+    TEST_ASSERT_EQUAL(24, UiLayout::kPanelBarX);
+    TEST_ASSERT_EQUAL(UiLayout::kPanelWidth - 44, UiLayout::kPanelBarWidth);
+    TEST_ASSERT_LESS_OR_EQUAL(UiLayout::kPanelWidth, UiLayout::kPanelBarX + UiLayout::kPanelBarWidth);
+}
+
+/** Verifies BLE advertising info text moves eight pixels down and right inside its box. */
+void testInfoStatusTextMovesDownAndRight(void) {
+    TEST_ASSERT_EQUAL(8, UiLayout::kInfoTextOffset);
+    TEST_ASSERT_EQUAL(8, UiLayout::kInfoStatusTextX);
+    TEST_ASSERT_EQUAL(6, UiLayout::kInfoStatusTextY);
+    TEST_ASSERT_EQUAL(42, UiLayout::kInfoDeviceTextY);
+    TEST_ASSERT_EQUAL(62, UiLayout::kInfoAddressTextY);
+}
+
 /** Verifies no layered glow bands are enabled for the background. */
 void testBackgroundUsesNoLayeredGlowBands(void) {
     TEST_ASSERT_EQUAL(0, UiLayout::kBackdropGlowBands);
@@ -126,6 +142,8 @@ int main(int argc, char **argv) {
     RUN_TEST(testUsagePanelsFitWithoutClippingFooter);
     RUN_TEST(testResetLabelStaysInsidePanelContent);
     RUN_TEST(testUsagePanelContentsUseRaisedAlignment);
+    RUN_TEST(testUsageBarWidensTowardRightEdge);
+    RUN_TEST(testInfoStatusTextMovesDownAndRight);
     RUN_TEST(testBackgroundUsesNoLayeredGlowBands);
     RUN_TEST(testBackgroundGradientIsDisabledForLimitedColorDisplay);
     RUN_TEST(testUsagePanelsAreTallerForMoreBreathingRoom);
