@@ -14,7 +14,7 @@ void testInfoScreenUsesBleAdvertisingStatus(void) {
 
 /** Verifies the bottom info label exposes the current firmware version. */
 void testInfoScreenFooterShowsFirmwareVersion(void) {
-    TEST_ASSERT_EQUAL_STRING("Neon Meter CoreS3 v1.0.2", kInfoFooterText);
+    TEST_ASSERT_EQUAL_STRING("Neon Meter CoreS3 v1.0.3", kInfoFooterText);
 }
 
 /** Verifies firmware metadata can be exposed through USB and BLE APIs. */
@@ -24,8 +24,17 @@ void testFirmwareMetadataFormatsJson(void) {
     formatFirmwareMetadata(buffer, sizeof(buffer));
 
     TEST_ASSERT_EQUAL_STRING(
-        "{\"firmwareVersion\":\"1.0.2\",\"chipFamily\":\"ESP32-S3\"}",
+        "{\"firmwareVersion\":\"1.0.3\",\"chipFamily\":\"ESP32-S3\"}",
         buffer);
+}
+
+/** Verifies screensaver connection text never includes provider usage data. */
+void testScreensaverConnectionTextUsesOnlyTransportStatus(void) {
+    TEST_ASSERT_EQUAL_STRING("LINK USB SERIAL", screensaverConnectionText(BleStateConnected, true));
+    TEST_ASSERT_EQUAL_STRING("LINK BLE CONNECTED", screensaverConnectionText(BleStateConnected, false));
+    TEST_ASSERT_EQUAL_STRING("LINK BLE ADVERTISING", screensaverConnectionText(BleStateAdvertising, false));
+    TEST_ASSERT_EQUAL_STRING("LINK BLE OFFLINE", screensaverConnectionText(BleStateDisconnected, false));
+    TEST_ASSERT_EQUAL_STRING("LINK STARTING", screensaverConnectionText(BleStateInit, false));
 }
 
 /** Runs the firmware info native test suite. */
@@ -38,5 +47,6 @@ int main(int argc, char **argv) {
     RUN_TEST(testInfoScreenUsesBleAdvertisingStatus);
     RUN_TEST(testInfoScreenFooterShowsFirmwareVersion);
     RUN_TEST(testFirmwareMetadataFormatsJson);
+    RUN_TEST(testScreensaverConnectionTextUsesOnlyTransportStatus);
     return UNITY_END();
 }

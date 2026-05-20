@@ -586,6 +586,7 @@ void uiUpdateBleStatus(BleState state, const char *name, const char *address) {
     if (address) lv_label_set_text_fmt(bleAddressLabel, "Address: %s", address);
 
     updateWaitingStatus(state);
+    splashSetStatus(state, usbConnected);
     setWaitingVisible(shouldShowWaitingForConnection(state, usbConnected));
 }
 
@@ -594,6 +595,7 @@ void uiUpdateUsbStatus(bool connected) {
     usbConnected = connected;
     BleState state = getBleState();
     updateWaitingStatus(state);
+    splashSetStatus(state, usbConnected);
     setWaitingVisible(shouldShowWaitingForConnection(state, usbConnected));
 }
 

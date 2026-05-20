@@ -30,8 +30,8 @@ brand assets.
   address, and a tap zone for clearing bonds.
 - Firmware version metadata is exposed to the host over USB hello frames and a
   read-only BLE metadata characteristic so the host can offer updates.
-- A splash screen uses a neutral neon sweep animation instead of Claude
-  crab/Clawd art or block-letter branding.
+- A splash screen uses a privacy-safe cyberpunk distortion animation instead
+  of provider usage data, Claude crab/Clawd art, or proprietary branding.
 - Touching the usage screen toggles the splash. Touching the splash returns to
   the last non-splash screen.
 - Pressing the CoreS3 power button cycles Usage and Bluetooth screens when not

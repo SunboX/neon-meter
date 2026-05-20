@@ -71,7 +71,7 @@ void testSerialProtocolFormatsControlFrames(void) {
 
     formatSerialProtocolHello(buffer, sizeof(buffer));
     TEST_ASSERT_EQUAL_STRING(
-        "{\"type\":\"hello\",\"protocol\":\"neon-meter-usb\",\"version\":1,\"device\":\"Neon Meter\",\"firmwareVersion\":\"1.0.2\",\"chipFamily\":\"ESP32-S3\"}",
+        "{\"type\":\"hello\",\"protocol\":\"neon-meter-usb\",\"version\":1,\"device\":\"Neon Meter\",\"firmwareVersion\":\"1.0.3\",\"chipFamily\":\"ESP32-S3\"}",
         buffer);
 
     formatSerialProtocolAck(buffer, sizeof(buffer));

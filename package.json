@@ -1,6 +1,6 @@
 {
   "name": "neon-meter",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "private": true,
   "description": "M5Stack CoreS3 LVGL usage dashboard for Claude Code and ChatGPT/Codex provider payloads.",
   "license": "AGPL-3.0-or-later",

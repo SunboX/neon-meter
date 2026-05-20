@@ -137,6 +137,11 @@ void bleInit() {
     formatFirmwareMetadata(metadata, sizeof(metadata));
     metadataChar->setValue(metadata);
 
+    if (!service->start()) {
+        bleState = BleStateDisconnected;
+        Serial.println("BLE service start failed");
+        return;
+    }
     bleServer->start();
     startAdvertising();
 
