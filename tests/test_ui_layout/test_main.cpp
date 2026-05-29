@@ -133,6 +133,14 @@ void testSharedHeaderStaysVisibleWhileWaitingForConnection(void) {
     TEST_ASSERT_FALSE(UiLayout::sharedHeaderIsVisible(true, true));
 }
 
+/** Verifies the battery indicator hides when the device has no battery attachment. */
+void testBatteryIndicatorRequiresHeaderAndBatteryAttachment(void) {
+    TEST_ASSERT_TRUE(UiLayout::batteryHeaderIsVisible(true, true));
+    TEST_ASSERT_FALSE(UiLayout::batteryHeaderIsVisible(true, false));
+    TEST_ASSERT_FALSE(UiLayout::batteryHeaderIsVisible(false, true));
+    TEST_ASSERT_FALSE(UiLayout::batteryHeaderIsVisible(false, false));
+}
+
 /** Runs the UI layout native test suite. */
 int main(int argc, char **argv) {
     (void)argc;
@@ -157,5 +165,6 @@ int main(int argc, char **argv) {
     RUN_TEST(testBrandMarkNeedleTracksHostIconDiagonal);
     RUN_TEST(testBrandMarkBaseAndDotsFitUpdatedIcon);
     RUN_TEST(testSharedHeaderStaysVisibleWhileWaitingForConnection);
+    RUN_TEST(testBatteryIndicatorRequiresHeaderAndBatteryAttachment);
     return UNITY_END();
 }

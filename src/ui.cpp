@@ -42,6 +42,7 @@ static Screen currentScreen = ScreenUsage;
 static Screen previousNonSplashScreen = ScreenUsage;
 static bool waitingForConnection = false;
 static bool usbConnected = false;
+static bool batteryAttached = true;
 static uint32_t animationLastMs = 0;
 static uint8_t footerLoaderFrame = 0;
 static UsageData footerUsageData = {};
@@ -599,9 +600,15 @@ void uiUpdateUsbStatus(bool connected) {
     setWaitingVisible(shouldShowWaitingForConnection(state, usbConnected));
 }
 
-/** Applies battery state to the shared header label. */
-void uiUpdateBattery(int percent, bool charging) {
+/** Applies battery state and attachment visibility to the shared header label. */
+void uiUpdateBattery(int percent, bool charging, bool attached) {
     if (!batteryLabel) return;
+    batteryAttached = attached;
+    applySharedVisibility();
+    if (!attached) {
+        lv_label_set_text(batteryLabel, "");
+        return;
+    }
     if (percent < 0) {
         lv_label_set_text(batteryLabel, charging ? "USB" : "--%");
     } else {
@@ -611,14 +618,18 @@ void uiUpdateBattery(int percent, bool charging) {
 
 /** Hides shared header elements behind overlays that should own the full screen. */
 static void applySharedVisibility() {
-    bool hide = !sharedHeaderIsVisible(currentScreen == ScreenSplash, waitingForConnection);
+    bool showSharedHeader = sharedHeaderIsVisible(currentScreen == ScreenSplash, waitingForConnection);
+    bool hide = !showSharedHeader;
     if (markContainer) {
         if (hide) lv_obj_add_flag(markContainer, LV_OBJ_FLAG_HIDDEN);
         else lv_obj_clear_flag(markContainer, LV_OBJ_FLAG_HIDDEN);
     }
     if (batteryLabel) {
-        if (hide) lv_obj_add_flag(batteryLabel, LV_OBJ_FLAG_HIDDEN);
-        else lv_obj_clear_flag(batteryLabel, LV_OBJ_FLAG_HIDDEN);
+        if (!batteryHeaderIsVisible(showSharedHeader, batteryAttached)) {
+            lv_obj_add_flag(batteryLabel, LV_OBJ_FLAG_HIDDEN);
+        } else {
+            lv_obj_clear_flag(batteryLabel, LV_OBJ_FLAG_HIDDEN);
+        }
     }
 }
 

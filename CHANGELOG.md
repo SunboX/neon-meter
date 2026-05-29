@@ -1,5 +1,24 @@
 # Changelog
 
+## 1.0.4 - 2026-05-29
+
+### Fixed
+
+- Hid the shared battery indicator when CoreS3 hardware reports no attached
+  battery.
+- Corrected CoreS3 charging detection to use the M5Unified charging state enum.
+
+### Changed
+
+- Propagated battery attachment state through the UI update path.
+- Updated firmware, protocol, and ESP Web Tools version metadata to 1.0.4.
+
+### Validation
+
+- `npm run validate:web-tools`
+- `npm test`
+- `npm run build`
+
 ## 1.0.2 - 2026-05-18
 
 ### Added

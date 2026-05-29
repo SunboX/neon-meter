@@ -72,4 +72,9 @@ constexpr bool kBackgroundGradientEnabled = false;
 constexpr bool sharedHeaderIsVisible(bool splashVisible, bool /*waitingForConnection*/) {
     return !splashVisible;
 }
+
+/** Returns whether the battery label belongs in the shared header. */
+constexpr bool batteryHeaderIsVisible(bool sharedHeaderVisible, bool batteryAttached) {
+    return sharedHeaderVisible && batteryAttached;
+}
 }

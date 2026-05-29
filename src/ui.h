@@ -40,9 +40,9 @@ void uiUpdateBleStatus(BleState state, const char *name, const char *address);
 void uiUpdateUsbStatus(bool connected);
 
 /**
- * Updates the battery indicator text.
+ * Updates the battery indicator text and attachment visibility.
  */
-void uiUpdateBattery(int percent, bool charging);
+void uiUpdateBattery(int percent, bool charging, bool attached);
 
 /**
  * Shows one top-level firmware screen.

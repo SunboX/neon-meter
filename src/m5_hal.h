@@ -58,6 +58,11 @@ int getBatteryPercent();
 bool isBatteryCharging();
 
 /**
+ * Returns true when the hardware reports an attached battery.
+ */
+bool hasBatteryAttachment();
+
+/**
  * Returns true when the CoreS3 power button was clicked.
  */
 bool wasPowerClicked();

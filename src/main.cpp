@@ -220,7 +220,7 @@ void setup() {
     bleInit();
     uiInit();
     uiUpdateBleStatus(getBleState(), getBleDeviceName(), getBleAddress());
-    uiUpdateBattery(getBatteryPercent(), isBatteryCharging());
+    uiUpdateBattery(getBatteryPercent(), isBatteryCharging(), hasBatteryAttachment());
     uiShowScreen(ScreenUsage);
 
     Serial.println("Neon Meter ready");
@@ -250,7 +250,7 @@ void loop() {
     static uint32_t lastBatteryMs = 0;
     if (millis() - lastBatteryMs >= 2000) {
         lastBatteryMs = millis();
-        uiUpdateBattery(getBatteryPercent(), isBatteryCharging());
+        uiUpdateBattery(getBatteryPercent(), isBatteryCharging(), hasBatteryAttachment());
     }
 
     if (wasPowerClicked()) {

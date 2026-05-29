@@ -94,7 +94,17 @@ int getBatteryPercent() {
 
 /** Returns whether the M5 power subsystem reports charging. */
 bool isBatteryCharging() {
-    return M5.Power.isCharging();
+    return M5.Power.isCharging() == m5::Power_Class::is_charging;
+}
+
+/** Returns whether the M5 power subsystem reports an attached battery. */
+bool hasBatteryAttachment() {
+#if defined(CONFIG_IDF_TARGET_ESP32S3)
+    if (M5.Power.getType() == m5::Power_Class::pmic_axp2101) {
+        return M5.Power.Axp2101.getBatState();
+    }
+#endif
+    return getBatteryPercent() >= 0;
 }
 
 /** Returns whether the CoreS3 power button was clicked. */
