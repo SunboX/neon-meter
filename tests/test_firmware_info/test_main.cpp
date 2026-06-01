@@ -14,7 +14,7 @@ void testInfoScreenUsesBleAdvertisingStatus(void) {
 
 /** Verifies the bottom info label exposes the current firmware version. */
 void testInfoScreenFooterShowsFirmwareVersion(void) {
-    TEST_ASSERT_EQUAL_STRING("Neon Meter CoreS3 v1.0.4", kInfoFooterText);
+    TEST_ASSERT_EQUAL_STRING("Neon Meter CoreS3 v1.0.5", kInfoFooterText);
 }
 
 /** Verifies firmware metadata can be exposed through USB and BLE APIs. */
@@ -24,7 +24,7 @@ void testFirmwareMetadataFormatsJson(void) {
     formatFirmwareMetadata(buffer, sizeof(buffer));
 
     TEST_ASSERT_EQUAL_STRING(
-        "{\"firmwareVersion\":\"1.0.4\",\"chipFamily\":\"ESP32-S3\"}",
+        "{\"firmwareVersion\":\"1.0.5\",\"chipFamily\":\"ESP32-S3\"}",
         buffer);
 }
 

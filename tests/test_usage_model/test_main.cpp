@@ -107,6 +107,25 @@ void testUsageParserClampsPercentages(void) {
     TEST_ASSERT_FALSE(data.ok);
 }
 
+/** Verifies reset-due windows show fresh usage instead of stale exhaustion. */
+void testUsageParserClearsExpiredResetWindows(void) {
+    UsageData data = {};
+
+    TEST_ASSERT_TRUE(parseUsageJson(
+        "{\"p\":\"chatgpt\",\"s\":100,\"sr\":0,\"w\":87,\"wr\":5,\"ok\":true}",
+        &data));
+
+    TEST_ASSERT_EQUAL_FLOAT(0.0f, data.primaryPct);
+    TEST_ASSERT_EQUAL_FLOAT(87.0f, data.secondaryPct);
+
+    TEST_ASSERT_TRUE(parseUsageJson(
+        "{\"p\":\"chatgpt\",\"s\":23,\"sr\":5,\"w\":100,\"wr\":0,\"ok\":true}",
+        &data));
+
+    TEST_ASSERT_EQUAL_FLOAT(23.0f, data.primaryPct);
+    TEST_ASSERT_EQUAL_FLOAT(0.0f, data.secondaryPct);
+}
+
 /** Verifies activity groups rise after a stable sampling window. */
 void testUsageRateGroupsAfterStableWindow(void) {
     UsageRateTracker tracker;
@@ -150,6 +169,7 @@ int main(int argc, char **argv) {
     RUN_TEST(testProviderBundleParsesMultipleProviders);
     RUN_TEST(testSinglePayloadParsesAsOneItemBundle);
     RUN_TEST(testUsageParserClampsPercentages);
+    RUN_TEST(testUsageParserClearsExpiredResetWindows);
     RUN_TEST(testUsageRateGroupsAfterStableWindow);
     RUN_TEST(testUsageRateResetsWhenPercentDrops);
     return UNITY_END();

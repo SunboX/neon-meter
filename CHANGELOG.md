@@ -1,5 +1,26 @@
 # Changelog
 
+## 1.0.5 - 2026-06-01
+
+### Fixed
+
+- Treated provider windows with reset minutes at `0` as freshly reset usage
+  instead of preserving stale exhausted percentages.
+
+### Documented
+
+- Clarified that `sr` and `wr` values of `0` mean the reset is due.
+
+### Changed
+
+- Updated firmware, protocol, and ESP Web Tools version metadata to 1.0.5.
+
+### Validation
+
+- `npm run validate:web-tools`
+- `npm test`
+- `npm run build`
+
 ## 1.0.4 - 2026-05-29
 
 ### Fixed

@@ -6,7 +6,7 @@
 #include <stdio.h>
 
 #ifndef NEON_METER_FIRMWARE_VERSION
-#define NEON_METER_FIRMWARE_VERSION "1.0.4"
+#define NEON_METER_FIRMWARE_VERSION "1.0.5"
 #endif
 
 /** Current firmware semantic version string. */

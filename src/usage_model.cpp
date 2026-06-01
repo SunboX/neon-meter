@@ -15,6 +15,12 @@ static float clampPercent(float value) {
     return value;
 }
 
+/** Returns fresh usage when a provider marks the window reset as due. */
+static float normalizeWindowPercent(float value, int resetMins) {
+    if (resetMins == 0) return 0.0f;
+    return clampPercent(value);
+}
+
 /** Copies a JSON string or fallback into a fixed Arduino display buffer. */
 static void copyField(char *destination, size_t destinationLength, const char *value, const char *fallback) {
     if (!destination || destinationLength == 0) return;
@@ -53,10 +59,10 @@ static bool parseUsageObject(JsonVariantConst payload, UsageData *out) {
     copyField(out->status, sizeof(out->status), jsonString(payload["st"]), "unknown");
     copyField(out->detail, sizeof(out->detail), jsonString(payload["detail"]), "");
 
-    out->primaryPct = clampPercent(payload["s"] | 0.0f);
     out->primaryResetMins = payload["sr"] | -1;
-    out->secondaryPct = clampPercent(payload["w"] | 0.0f);
     out->secondaryResetMins = payload["wr"] | -1;
+    out->primaryPct = normalizeWindowPercent(payload["s"] | 0.0f, out->primaryResetMins);
+    out->secondaryPct = normalizeWindowPercent(payload["w"] | 0.0f, out->secondaryResetMins);
     out->ok = payload["ok"] | false;
     out->valid = true;
     return true;

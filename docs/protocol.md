@@ -23,7 +23,7 @@ The host probes a serial port by writing:
 The firmware responds:
 
 ```json
-{"type":"hello","protocol":"neon-meter-usb","version":1,"device":"Neon Meter","firmwareVersion":"1.0.4","chipFamily":"ESP32-S3"}
+{"type":"hello","protocol":"neon-meter-usb","version":1,"device":"Neon Meter","firmwareVersion":"1.0.5","chipFamily":"ESP32-S3"}
 ```
 
 After a successful handshake, the host sends a heartbeat every 5 seconds:
@@ -80,7 +80,7 @@ notification to request a fresh payload.
 Newer firmware also exposes a read-only metadata characteristic:
 
 ```json
-{"firmwareVersion":"1.0.4","chipFamily":"ESP32-S3"}
+{"firmwareVersion":"1.0.5","chipFamily":"ESP32-S3"}
 ```
 
 Hosts should treat this metadata as optional so older firmware remains
@@ -137,10 +137,10 @@ Single compact provider objects remain supported for compatibility.
 | `title` | string | Optional UI title. Defaults from provider. |
 | `s` | number | Primary/current usage percent, clamped to 0-100. |
 | `sl` | string | Primary/current panel label. Defaults to `Current`. |
-| `sr` | number | Minutes until primary/current window reset. `-1` means unknown. |
+| `sr` | number | Minutes until primary/current window reset. `0` means the reset is due, and `-1` means unknown. |
 | `w` | number | Secondary/weekly/monthly usage percent, clamped to 0-100. |
 | `wl` | string | Secondary panel label. Defaults to `Weekly`. |
-| `wr` | number | Minutes until secondary window reset. `-1` means unknown. |
+| `wr` | number | Minutes until secondary window reset. `0` means the reset is due, and `-1` means unknown. |
 | `st` | string | Provider status, such as `ok`, `allowed`, `limited`, or `error`. |
 | `detail` | string | Optional short status/spend note. |
 | `ok` | boolean | Whether the host-side fetch succeeded. |
