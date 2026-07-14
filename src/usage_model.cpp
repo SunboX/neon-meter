@@ -63,9 +63,15 @@ static bool parseUsageObject(JsonVariantConst payload, UsageData *out) {
     out->secondaryResetMins = payload["wr"] | -1;
     out->primaryPct = normalizeWindowPercent(payload["s"] | 0.0f, out->primaryResetMins);
     out->secondaryPct = normalizeWindowPercent(payload["w"] | 0.0f, out->secondaryResetMins);
+    out->sessionEnabled = payload["se"] | true;
     out->ok = payload["ok"] | false;
     out->valid = true;
     return true;
+}
+
+/** Returns the first available provider percentage for activity tracking. */
+float usageRatePercent(const UsageData &data) {
+    return data.sessionEnabled ? data.primaryPct : data.secondaryPct;
 }
 
 /** Converts a rotation field to bounded milliseconds. */

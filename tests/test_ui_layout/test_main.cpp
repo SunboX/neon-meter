@@ -8,6 +8,13 @@ void testUsagePanelsFitWithoutClippingFooter(void) {
                               UiLayout::kContentY + (UiLayout::kPanelHeight * 2) + UiLayout::kPanelGap);
 }
 
+/** Verifies Weekly occupies the first panel slot without Session. */
+void testWeeklyMovesToFirstSlotWithoutSession(void) {
+    TEST_ASSERT_EQUAL(UiLayout::kContentY, UiLayout::secondaryPanelY(false));
+    TEST_ASSERT_EQUAL(UiLayout::kContentY + UiLayout::kPanelHeight + UiLayout::kPanelGap,
+                      UiLayout::secondaryPanelY(true));
+}
+
 /** Verifies reset labels stay inside their usage panel. */
 void testResetLabelStaysInsidePanelContent(void) {
     TEST_ASSERT_EQUAL(50, UiLayout::kResetTextY);
@@ -148,6 +155,7 @@ int main(int argc, char **argv) {
 
     UNITY_BEGIN();
     RUN_TEST(testUsagePanelsFitWithoutClippingFooter);
+    RUN_TEST(testWeeklyMovesToFirstSlotWithoutSession);
     RUN_TEST(testResetLabelStaysInsidePanelContent);
     RUN_TEST(testUsagePanelContentsUseRaisedAlignment);
     RUN_TEST(testUsageBarWidensTowardRightEdge);

@@ -100,6 +100,7 @@ contains two, the device rotates between cached provider screens using
     {
       "p": "claude",
       "title": "Claude Code",
+      "se": true,
       "s": 29,
       "sl": "Session",
       "sr": 142,
@@ -113,6 +114,7 @@ contains two, the device rotates between cached provider screens using
     {
       "p": "chatgpt",
       "title": "ChatGPT",
+      "se": true,
       "s": 55,
       "sl": "Session",
       "sr": 180,
@@ -135,6 +137,7 @@ Single compact provider objects remain supported for compatibility.
 | --- | --- | --- |
 | `p` | string | Provider key, such as `claude`, `chatgpt`, or `host`. Defaults to `claude` for Clawdmeter compatibility. |
 | `title` | string | Optional UI title. Defaults from provider. |
+| `se` | boolean | Whether a real Session window is available. Missing means `true`; `false` hides Session everywhere. |
 | `s` | number | Primary/current usage percent, clamped to 0-100. |
 | `sl` | string | Primary/current panel label. Defaults to `Current`. |
 | `sr` | number | Minutes until primary/current window reset. `0` means the reset is due, and `-1` means unknown. |
@@ -159,5 +162,17 @@ Claude-compatible:
 ChatGPT/Codex:
 
 ```json
-{"p":"chatgpt","title":"ChatGPT","s":55,"sl":"Session","sr":180,"w":40,"wl":"Weekly","wr":10080,"st":"ok","detail":"5h 55% / 7d 40%","ok":true}
+{"p":"chatgpt","title":"ChatGPT","se":true,"s":55,"sl":"Session","sr":180,"w":40,"wl":"Weekly","wr":10080,"st":"ok","detail":"5h 55% / 7d 40%","ok":true}
 ```
+
+ChatGPT/Codex with no Session window:
+
+```json
+{"p":"chatgpt","title":"ChatGPT","se":false,"s":0,"sl":"Session","sr":-1,"w":52,"wl":"Weekly","wr":7942,"st":"ok","detail":"7d 52%","ok":true}
+```
+
+The host classifies exact `18000`-second Session and `604800`-second Weekly
+windows by duration rather than `primary_window` or `secondary_window`
+position. Updated firmware hides the complete Session panel while `se` is
+false, moves Weekly into the upper panel slot, and restores both panels when a
+Session window returns.

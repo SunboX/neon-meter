@@ -68,6 +68,11 @@ constexpr int kBrandMarkBaseY = 25;
 constexpr int kBackdropGlowBands = 0;
 constexpr bool kBackgroundGradientEnabled = false;
 
+/** Returns the Weekly panel Y position for one- or two-window layouts. */
+constexpr int secondaryPanelY(bool sessionEnabled) {
+    return sessionEnabled ? kContentY + kPanelHeight + kPanelGap : kContentY;
+}
+
 /** Returns whether shared header status belongs above the current overlay. */
 constexpr bool sharedHeaderIsVisible(bool splashVisible, bool /*waitingForConnection*/) {
     return !splashVisible;

@@ -21,10 +21,12 @@ static lv_obj_t *waitingContainer = nullptr;
 static lv_obj_t *markContainer = nullptr;
 static lv_obj_t *batteryLabel = nullptr;
 static lv_obj_t *titleLabel = nullptr;
+static lv_obj_t *primaryPanel = nullptr;
 static lv_obj_t *primaryPctLabel = nullptr;
 static lv_obj_t *primaryNameLabel = nullptr;
 static lv_obj_t *primaryResetLabel = nullptr;
 static lv_obj_t *primaryBar = nullptr;
+static lv_obj_t *secondaryPanel = nullptr;
 static lv_obj_t *secondaryPctLabel = nullptr;
 static lv_obj_t *secondaryNameLabel = nullptr;
 static lv_obj_t *secondaryResetLabel = nullptr;
@@ -194,10 +196,10 @@ static lv_obj_t *makeBrandShape(lv_obj_t *parent, int x, int y, int width, int h
     return shape;
 }
 
-/** Creates one usage percentage panel and returns its child widgets. */
-static void makeUsagePanel(lv_obj_t *parent, int y, const char *label,
-                           lv_obj_t **percentLabel, lv_obj_t **pillLabel, lv_obj_t **progressBar,
-                           lv_obj_t **resetLabel) {
+/** Creates one usage percentage panel and returns its panel container. */
+static lv_obj_t *makeUsagePanel(lv_obj_t *parent, int y, const char *label,
+                                lv_obj_t **percentLabel, lv_obj_t **pillLabel, lv_obj_t **progressBar,
+                                lv_obj_t **resetLabel) {
     lv_obj_t *panel = makePanel(parent, kMargin, y, kPanelWidth, kPanelHeight);
     lv_obj_set_style_bg_color(panel, kThemeUsagePanel, 0);
 
@@ -221,6 +223,7 @@ static void makeUsagePanel(lv_obj_t *parent, int y, const char *label,
     lv_obj_set_style_text_font(*resetLabel, &lv_font_montserrat_12, 0);
     lv_obj_set_style_text_color(*resetLabel, kThemeDim, 0);
     lv_obj_set_pos(*resetLabel, 24, kResetTextY);
+    return panel;
 }
 
 /** Creates the compact host-style brand mark. */
@@ -365,10 +368,10 @@ static void initUsageScreen(lv_obj_t *screenObject) {
     lv_obj_set_style_text_color(titleLabel, kThemeAccent, 0);
     lv_obj_align(titleLabel, LV_ALIGN_TOP_MID, 8, kTitleY - 3);
 
-    makeUsagePanel(usageContainer, kContentY, "Current", &primaryPctLabel,
-                     &primaryNameLabel, &primaryBar, &primaryResetLabel);
-    makeUsagePanel(usageContainer, kContentY + kPanelHeight + kPanelGap, "Weekly", &secondaryPctLabel,
-                     &secondaryNameLabel, &secondaryBar, &secondaryResetLabel);
+    primaryPanel = makeUsagePanel(usageContainer, kContentY, "Current", &primaryPctLabel,
+                                  &primaryNameLabel, &primaryBar, &primaryResetLabel);
+    secondaryPanel = makeUsagePanel(usageContainer, secondaryPanelY(true), "Weekly", &secondaryPctLabel,
+                                    &secondaryNameLabel, &secondaryBar, &secondaryResetLabel);
 
     makeFooter(usageContainer);
 }
@@ -492,6 +495,12 @@ void uiUpdate(const UsageData *data, int rateGroup) {
     lv_label_set_text(titleLabel, data->title);
     lv_label_set_text(primaryNameLabel, data->primaryLabel);
     lv_label_set_text(secondaryNameLabel, data->secondaryLabel);
+    if (data->sessionEnabled) {
+        lv_obj_clear_flag(primaryPanel, LV_OBJ_FLAG_HIDDEN);
+    } else {
+        lv_obj_add_flag(primaryPanel, LV_OBJ_FLAG_HIDDEN);
+    }
+    lv_obj_set_y(secondaryPanel, secondaryPanelY(data->sessionEnabled));
 
     int primary = UiGauge::remainingPercent(data->primaryPct);
     int secondary = UiGauge::remainingPercent(data->secondaryPct);

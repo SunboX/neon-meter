@@ -17,6 +17,7 @@ struct UsageData {
     int primaryResetMins;
     float secondaryPct;
     int secondaryResetMins;
+    bool sessionEnabled;
     char status[24];
     char detail[48];
     bool ok;
@@ -52,3 +53,8 @@ const char *providerDefaultTitle(const char *provider);
  * Formats reset minutes into the short display text used by the UI.
  */
 void formatResetTime(int minutes, char *buffer, size_t bufferLength);
+
+/**
+ * Returns the first available provider percentage for activity tracking.
+ */
+float usageRatePercent(const UsageData &data);

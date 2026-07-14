@@ -86,7 +86,7 @@ static void applyUsageItem(size_t index, bool trackRate) {
     if (index >= usageBundle.count) return;
     usage = usageBundle.items[index];
     if (trackRate) {
-        rateTracker.addSample(millis(), usage.primaryPct);
+        rateTracker.addSample(millis(), usageRatePercent(usage));
     }
     uiUpdate(&usage, rateTracker.getGroup());
     if (!trackRate) return;

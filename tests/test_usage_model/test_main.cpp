@@ -20,8 +20,23 @@ void testClawdmeterPayloadDefaultsToClaude(void) {
     TEST_ASSERT_EQUAL(142, data.primaryResetMins);
     TEST_ASSERT_EQUAL_FLOAT(4.0f, data.secondaryPct);
     TEST_ASSERT_EQUAL(9730, data.secondaryResetMins);
+    TEST_ASSERT_TRUE(data.sessionEnabled);
     TEST_ASSERT_EQUAL_STRING("allowed", data.status);
     TEST_ASSERT_TRUE(data.ok);
+}
+
+/** Verifies a missing Session remains absent while Weekly data is preserved. */
+void testUsageParserKeepsOptionalSessionState(void) {
+    UsageData data = {};
+
+    TEST_ASSERT_TRUE(parseUsageJson(
+        "{\"p\":\"chatgpt\",\"se\":false,\"s\":0,\"sr\":-1,"
+        "\"w\":52,\"wl\":\"Weekly\",\"wr\":7942,\"detail\":\"7d 52%\",\"ok\":true}",
+        &data));
+
+    TEST_ASSERT_FALSE(data.sessionEnabled);
+    TEST_ASSERT_EQUAL_FLOAT(52.0f, data.secondaryPct);
+    TEST_ASSERT_EQUAL_FLOAT(52.0f, usageRatePercent(data));
 }
 
 /** Verifies provider metadata and detail text survive parsing. */
@@ -170,6 +185,7 @@ int main(int argc, char **argv) {
     RUN_TEST(testSinglePayloadParsesAsOneItemBundle);
     RUN_TEST(testUsageParserClampsPercentages);
     RUN_TEST(testUsageParserClearsExpiredResetWindows);
+    RUN_TEST(testUsageParserKeepsOptionalSessionState);
     RUN_TEST(testUsageRateGroupsAfterStableWindow);
     RUN_TEST(testUsageRateResetsWhenPercentDrops);
     return UNITY_END();
