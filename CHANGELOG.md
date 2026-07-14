@@ -1,5 +1,32 @@
 # Changelog
 
+## 1.0.7 - 2026-07-14
+
+### Added
+
+- Added a persistent random-static BLE identity that survives routine firmware
+  updates and changes automatically after a full flash erase.
+- Added the optional USB `ble-repair` capability, which clears device bonds,
+  rotates the BLE identity, and restarts after acknowledging the host.
+- Published split bootloader, partition-table, OTA-selector, and app images for
+  non-erasing updates while retaining a separate merged factory image.
+
+### Fixed
+
+- Recovered automatically from one-sided stale BLE pairing state left behind
+  when the device was erased but the computer retained its old bond.
+
+### Changed
+
+- Updated firmware, protocol, and ESP Web Tools version metadata to 1.0.7.
+- Documented the safe update and explicit factory-recovery artifact roles.
+
+### Validation
+
+- `npm run validate:web-tools`
+- `npm test`
+- `npm run build`
+
 ## 1.0.6 - 2026-07-14
 
 ### Fixed

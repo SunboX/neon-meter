@@ -47,6 +47,12 @@ jobs:
         run: |
           mkdir -p public/firmware
           cp -R web/esp-web-tools/. public/
+          cp .pio/build/m5stack-cores3/bootloader.bin public/firmware/bootloader.bin
+          cp .pio/build/m5stack-cores3/partitions.bin public/firmware/partitions.bin
+          cp .pio/build/m5stack-cores3/firmware.bin public/firmware/firmware.bin
+          boot_app0="$(find "$HOME/.platformio/packages" -path '*/tools/partitions/boot_app0.bin' -print -quit)"
+          test -n "$boot_app0"
+          cp "$boot_app0" public/firmware/boot_app0.bin
           cp .pio/build/m5stack-cores3/firmware.factory.bin public/firmware/neon-meter-m5stack-cores3.factory.bin
 
       - name: Configure GitHub Pages

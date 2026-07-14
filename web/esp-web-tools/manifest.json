@@ -1,6 +1,6 @@
 {
     "name": "Neon Meter",
-    "version": "1.0.6",
+    "version": "1.0.7",
     "new_install_prompt_erase": true,
     "new_install_improv_wait_time": 0,
     "builds": [
@@ -8,10 +8,26 @@
             "chipFamily": "ESP32-S3",
             "parts": [
                 {
-                    "path": "firmware/neon-meter-m5stack-cores3.factory.bin",
+                    "path": "firmware/bootloader.bin",
                     "offset": 0
+                },
+                {
+                    "path": "firmware/partitions.bin",
+                    "offset": 32768
+                },
+                {
+                    "path": "firmware/boot_app0.bin",
+                    "offset": 57344
+                },
+                {
+                    "path": "firmware/firmware.bin",
+                    "offset": 65536
                 }
             ]
         }
-    ]
+    ],
+    "factory": {
+        "path": "firmware/neon-meter-m5stack-cores3.factory.bin",
+        "offset": 0
+    }
 }

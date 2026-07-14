@@ -23,7 +23,7 @@ The host probes a serial port by writing:
 The firmware responds:
 
 ```json
-{"type":"hello","protocol":"neon-meter-usb","version":1,"device":"Neon Meter","firmwareVersion":"1.0.6","chipFamily":"ESP32-S3","capabilities":["ble-repair"]}
+{"type":"hello","protocol":"neon-meter-usb","version":1,"device":"Neon Meter","firmwareVersion":"1.0.7","chipFamily":"ESP32-S3","capabilities":["ble-repair"]}
 ```
 
 After a successful handshake, the host sends a heartbeat every 5 seconds:
@@ -101,7 +101,7 @@ notification to request a fresh payload.
 Newer firmware also exposes a read-only metadata characteristic:
 
 ```json
-{"firmwareVersion":"1.0.6","chipFamily":"ESP32-S3"}
+{"firmwareVersion":"1.0.7","chipFamily":"ESP32-S3"}
 ```
 
 Hosts should treat this metadata as optional so older firmware remains

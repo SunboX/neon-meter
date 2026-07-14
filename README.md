@@ -18,6 +18,10 @@ Chrome or Edge, connect the M5Stack CoreS3 over USB, then click
 
 Most users do not need PlatformIO or a local firmware build.
 
+Routine updates use split firmware images so the device's NVS-backed BLE
+identity and pairing state are preserved. A merged factory image remains
+available separately for explicit full-erase recovery.
+
 ## Device Photo
 
 <p>

@@ -28,11 +28,15 @@ assert.equal(manifest.new_install_improv_wait_time, 0)
 assert.equal(manifest.builds.length, 1)
 assert.equal(manifest.builds[0].chipFamily, 'ESP32-S3')
 assert.deepEqual(manifest.builds[0].parts, [
-    {
-        path: 'firmware/neon-meter-m5stack-cores3.factory.bin',
-        offset: 0,
-    },
+    { path: 'firmware/bootloader.bin', offset: 0 },
+    { path: 'firmware/partitions.bin', offset: 32768 },
+    { path: 'firmware/boot_app0.bin', offset: 57344 },
+    { path: 'firmware/firmware.bin', offset: 65536 },
 ])
+assert.deepEqual(manifest.factory, {
+    path: 'firmware/neon-meter-m5stack-cores3.factory.bin',
+    offset: 0,
+})
 
 assert.match(html, /esp-web-tools@10\/dist\/web\/install-button\.js\?module/)
 assert.match(html, /<esp-web-install-button\s+manifest="manifest\.json"/)
@@ -49,7 +53,15 @@ assert.match(icon, /Dark neon gauge icon/)
 
 assert.match(workflow, /branches: \[main\]/)
 assert.match(workflow, /npm run build/)
-assert.match(workflow, /firmware\.factory\.bin/)
+for (const artifact of [
+    'bootloader.bin',
+    'partitions.bin',
+    'boot_app0.bin',
+    'firmware.bin',
+    'firmware.factory.bin',
+]) {
+    assert.match(workflow, new RegExp(artifact.replaceAll('.', '\\.')))
+}
 assert.match(workflow, /actions\/deploy-pages@v4/)
 assert.match(workflow, /pages: write/)
 
