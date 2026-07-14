@@ -60,6 +60,13 @@ bool parseSerialProtocolLine(const char *line, SerialProtocolMessage *out) {
         return true;
     }
 
+    if (type && strcmp(type, "ble-repair") == 0) {
+        out->type = SerialProtocolMessageBleRepair;
+        out->valid = true;
+        out->payload[0] = '\0';
+        return true;
+    }
+
     if (type && strcmp(type, "payload") == 0) {
         return copyPayload(object["payload"].as<JsonVariantConst>(), out);
     }
@@ -76,7 +83,7 @@ bool parseSerialProtocolLine(const char *line, SerialProtocolMessage *out) {
 void formatSerialProtocolHello(char *buffer, size_t bufferLength) {
     if (!buffer || bufferLength == 0) return;
     snprintf(buffer, bufferLength,
-             "{\"type\":\"hello\",\"protocol\":\"%s\",\"version\":%d,\"device\":\"Neon Meter\",\"firmwareVersion\":\"%s\",\"chipFamily\":\"%s\"}",
+             "{\"type\":\"hello\",\"protocol\":\"%s\",\"version\":%d,\"device\":\"Neon Meter\",\"firmwareVersion\":\"%s\",\"chipFamily\":\"%s\",\"capabilities\":[\"ble-repair\"]}",
              kUsbProtocolName, kUsbProtocolVersion, kFirmwareVersion, kFirmwareChipFamily);
 }
 
@@ -96,4 +103,10 @@ void formatSerialProtocolNack(char *buffer, size_t bufferLength) {
 void formatSerialProtocolRefreshRequest(char *buffer, size_t bufferLength) {
     if (!buffer || bufferLength == 0) return;
     snprintf(buffer, bufferLength, "{\"type\":\"refresh-requested\"}");
+}
+
+/** Formats the acknowledgement sent before rebooting for BLE repair. */
+void formatSerialProtocolBleRepairAccepted(char *buffer, size_t bufferLength) {
+    if (!buffer || bufferLength == 0) return;
+    snprintf(buffer, bufferLength, "{\"type\":\"ble-repair-accepted\",\"ok\":true}");
 }

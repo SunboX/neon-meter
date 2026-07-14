@@ -38,7 +38,7 @@ const char *getBleDeviceName();
 const char *getBleAddress();
 
 /**
- * Deletes paired device bonds and forces the central to reconnect.
+ * Deletes paired device bonds, rotates the BLE identity, and restarts.
  */
 void clearBleBonds();
 

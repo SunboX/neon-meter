@@ -23,7 +23,7 @@ The host probes a serial port by writing:
 The firmware responds:
 
 ```json
-{"type":"hello","protocol":"neon-meter-usb","version":1,"device":"Neon Meter","firmwareVersion":"1.0.6","chipFamily":"ESP32-S3"}
+{"type":"hello","protocol":"neon-meter-usb","version":1,"device":"Neon Meter","firmwareVersion":"1.0.6","chipFamily":"ESP32-S3","capabilities":["ble-repair"]}
 ```
 
 After a successful handshake, the host sends a heartbeat every 5 seconds:
@@ -57,6 +57,27 @@ The firmware sends these control frames:
 | `{"type":"ack","ack":true}` | Payload accepted. |
 | `{"type":"err","err":true}` | Payload rejected or failed to parse. |
 | `{"type":"refresh-requested"}` | Host should send a fresh provider bundle. |
+
+### BLE Pairing Repair
+
+Firmware that lists `ble-repair` in the hello `capabilities` array accepts this
+request over USB:
+
+```json
+{"type":"ble-repair"}
+```
+
+Before making any Bluetooth changes, the firmware acknowledges the request:
+
+```json
+{"type":"ble-repair-accepted","ok":true}
+```
+
+It then clears stored peer bonds, generates and persists a new random-static
+BLE identity, and restarts. The new identity makes the meter discoverable as a
+fresh peripheral when the computer still retains an obsolete pairing record.
+Hosts must treat this command as optional for compatibility with older
+firmware.
 
 ## Service
 

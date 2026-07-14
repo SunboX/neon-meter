@@ -1,5 +1,6 @@
 #include "ble_service.h"
 
+#include "ble_identity_store.h"
 #include "firmware_info.h"
 
 #include <Arduino.h>
@@ -26,6 +27,8 @@ static char rxBuffer[kBleBufferSize];
 static volatile bool dataReady = false;
 static volatile bool hasReceivedData = false;
 static char addressText[18] = "---";
+static bool restartForBleRepair = false;
+static uint32_t restartForBleRepairAtMs = 0;
 
 /** Starts advertising with the documented Neon Meter service UUID. */
 static void startAdvertising() {
@@ -103,6 +106,9 @@ class BleRequestCallbacks : public BLECharacteristicCallbacks {
 /** Starts NimBLE, creates all service characteristics, and advertises. */
 void bleInit() {
     BLEDevice::init(kDeviceName);
+    if (!configurePersistentBleIdentity()) {
+        Serial.println("BLE identity setup failed");
+    }
     BLESecurity::setAuthenticationMode(true, false, true);
 
     BLEAddress address = BLEDevice::getAddress();
@@ -150,6 +156,12 @@ void bleInit() {
 
 /** Restarts advertising after disconnect outside the NimBLE callback. */
 void bleTick() {
+    if (restartForBleRepair &&
+        static_cast<int32_t>(millis() - restartForBleRepairAtMs) >= 0) {
+        Serial.flush();
+        ESP.restart();
+        return;
+    }
     if (!needAdvertise) return;
     needAdvertise = false;
     startAdvertising();
@@ -170,16 +182,22 @@ const char *getBleAddress() {
     return addressText;
 }
 
-/** Deletes BLE bonds and disconnects the current central if needed. */
+/** Deletes BLE bonds, rotates the identity, and schedules a restart. */
 void clearBleBonds() {
     ble_store_clear();
-    Serial.println("BLE bonds cleared");
+    bool rotated = rotatePersistentBleIdentity();
+    Serial.printf("BLE bonds cleared, identity rotated: %s\n", rotated ? "OK" : "FAILED");
     if (bleState == BleStateConnected && bleServer && bleServer->getConnectedCount() > 0) {
         for (const auto &peer : bleServer->getPeerDevices(false)) {
             bleServer->disconnect(peer.first);
         }
     }
-    needAdvertise = true;
+    if (rotated) {
+        restartForBleRepair = true;
+        restartForBleRepairAtMs = millis() + 250;
+    } else {
+        needAdvertise = true;
+    }
 }
 
 /** Returns true when a pending RX payload has not been consumed. */

@@ -11,6 +11,7 @@ enum SerialProtocolMessageType {
     SerialProtocolMessageIgnored = 0,
     SerialProtocolMessageHello,
     SerialProtocolMessagePing,
+    SerialProtocolMessageBleRepair,
     SerialProtocolMessagePayload
 };
 
@@ -47,3 +48,8 @@ void formatSerialProtocolNack(char *buffer, size_t bufferLength);
  * Formats the payload refresh request control frame.
  */
 void formatSerialProtocolRefreshRequest(char *buffer, size_t bufferLength);
+
+/**
+ * Formats the accepted BLE repair control frame.
+ */
+void formatSerialProtocolBleRepairAccepted(char *buffer, size_t bufferLength);

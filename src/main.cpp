@@ -96,7 +96,7 @@ static void applyUsageItem(size_t index, bool trackRate) {
 
 /** Prints one formatted USB serial protocol control frame. */
 static void printSerialProtocolFrame(void (*formatter)(char *, size_t)) {
-    char buffer[192] = {};
+    char buffer[256] = {};
     formatter(buffer, sizeof(buffer));
     Serial.println(buffer);
 }
@@ -119,6 +119,11 @@ static void sendSerialHello() {
 /** Asks the USB serial host for a fresh provider payload. */
 static void requestSerialRefresh() {
     printSerialProtocolFrame(formatSerialProtocolRefreshRequest);
+}
+
+/** Acknowledges a USB request to repair stale BLE pairing state. */
+static void sendSerialBleRepairAccepted() {
+    printSerialProtocolFrame(formatSerialProtocolBleRepairAccepted);
 }
 
 /** Marks inbound USB serial protocol activity for the UI. */
@@ -177,6 +182,11 @@ static void handleSerialProtocolMessage(const SerialProtocolMessage &message) {
         if (usageBundle.count == 0) requestSerialRefresh();
     } else if (message.type == SerialProtocolMessagePing) {
         markUsbProtocolActivity();
+    } else if (message.type == SerialProtocolMessageBleRepair) {
+        markUsbProtocolActivity();
+        sendSerialBleRepairAccepted();
+        Serial.flush();
+        clearBleBonds();
     } else if (message.type == SerialProtocolMessagePayload) {
         markUsbProtocolActivity();
         handlePayload(message.payload, false, true);

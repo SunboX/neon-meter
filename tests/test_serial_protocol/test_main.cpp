@@ -65,13 +65,24 @@ void testPingParsesAsControlFrame(void) {
     TEST_ASSERT_EQUAL_STRING("", message.payload);
 }
 
+/** Verifies USB BLE repair frames are recognized as control messages. */
+void testBleRepairParsesAsControlFrame(void) {
+    SerialProtocolMessage message = {};
+
+    TEST_ASSERT_TRUE(parseSerialProtocolLine("{\"type\":\"ble-repair\"}", &message));
+
+    TEST_ASSERT_TRUE(message.valid);
+    TEST_ASSERT_EQUAL(SerialProtocolMessageBleRepair, message.type);
+    TEST_ASSERT_EQUAL_STRING("", message.payload);
+}
+
 /** Verifies serial control frames use documented newline-delimited JSON. */
 void testSerialProtocolFormatsControlFrames(void) {
     char buffer[192] = {};
 
     formatSerialProtocolHello(buffer, sizeof(buffer));
     TEST_ASSERT_EQUAL_STRING(
-        "{\"type\":\"hello\",\"protocol\":\"neon-meter-usb\",\"version\":1,\"device\":\"Neon Meter\",\"firmwareVersion\":\"1.0.6\",\"chipFamily\":\"ESP32-S3\"}",
+        "{\"type\":\"hello\",\"protocol\":\"neon-meter-usb\",\"version\":1,\"device\":\"Neon Meter\",\"firmwareVersion\":\"1.0.6\",\"chipFamily\":\"ESP32-S3\",\"capabilities\":[\"ble-repair\"]}",
         buffer);
 
     formatSerialProtocolAck(buffer, sizeof(buffer));
@@ -82,6 +93,9 @@ void testSerialProtocolFormatsControlFrames(void) {
 
     formatSerialProtocolRefreshRequest(buffer, sizeof(buffer));
     TEST_ASSERT_EQUAL_STRING("{\"type\":\"refresh-requested\"}", buffer);
+
+    formatSerialProtocolBleRepairAccepted(buffer, sizeof(buffer));
+    TEST_ASSERT_EQUAL_STRING("{\"type\":\"ble-repair-accepted\",\"ok\":true}", buffer);
 }
 
 /** Runs the serial USB protocol native test suite. */
@@ -94,6 +108,7 @@ int main(int argc, char **argv) {
     RUN_TEST(testWrappedPayloadParsesAsPayload);
     RUN_TEST(testHelloParsesAsControlFrame);
     RUN_TEST(testPingParsesAsControlFrame);
+    RUN_TEST(testBleRepairParsesAsControlFrame);
     RUN_TEST(testSerialProtocolFormatsControlFrames);
     return UNITY_END();
 }
