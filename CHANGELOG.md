@@ -1,5 +1,28 @@
 # Changelog
 
+## 1.0.6 - 2026-07-14
+
+### Fixed
+
+- Hide the complete Session usage panel when the host reports that ChatGPT's
+  Session limit is unavailable, and promote Weekly usage to the upper slot.
+- Restore the Session panel automatically when a later payload reports it as
+  available again.
+- Track the visible Weekly usage for activity and screensaver behavior while
+  Session is unavailable.
+
+### Changed
+
+- Added backward-compatible support for the optional `se` payload capability;
+  payloads without it retain the legacy two-panel display.
+- Updated firmware, protocol, and ESP Web Tools version metadata to 1.0.6.
+
+### Validation
+
+- `npm run validate:web-tools`
+- `npm test`
+- `npm run build`
+
 ## 1.0.5 - 2026-06-01
 
 ### Fixed
